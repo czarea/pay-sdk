@@ -22,12 +22,14 @@ public class WeixinPayConfig {
     private String certPath;
     private String appId;
     private String mchId;
+    private String key;
     private long readTimeoutMs = 10000;
     private long connectTimeoutMs =2000;
     private String primaryDomain = "api.mch.weixin.qq.com"; 
     private String alternateDomain ="api2.mch.weixin.qq.com";
     private int reportWorkerNum =1;
     private int reportBatchSize =2;
+    private String notifyUrl;
     
     public boolean shouldAutoReport() {
         return true;
@@ -49,15 +51,15 @@ public class WeixinPayConfig {
     }
 
     public String getAppID() {
-        return "wx7a38a3b777c31606";
+        return appId;
     }
 
     public String getMchID() {
-        return "1493001312";
+        return mchId;
     }
 
     public String getKey() {
-        return "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCA";
+        return key;
     }
 
     public InputStream getCertStream() {
@@ -163,6 +165,14 @@ public class WeixinPayConfig {
         this.alternateDomain = alternateDomain;
     }
 
+    public String getNotifyUrl() {
+        return notifyUrl;
+    }
+
+    public void setNotifyUrl(String notifyUrl) {
+        this.notifyUrl = notifyUrl;
+    }
+
     public void setReportWorkerNum(int reportWorkerNum) {
         this.reportWorkerNum = reportWorkerNum;
     }
@@ -170,4 +180,9 @@ public class WeixinPayConfig {
     public void setReportBatchSize(int reportBatchSize) {
         this.reportBatchSize = reportBatchSize;
     }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+    
 }

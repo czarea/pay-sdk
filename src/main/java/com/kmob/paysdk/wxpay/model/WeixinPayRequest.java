@@ -80,11 +80,22 @@ public class WeixinPayRequest {
      * no_credit--指定不能使用信用卡支付
      */
     private String limitPay;
+    
+    /**
+     * 商品ID
+     */
+    private String productId;
 
     /**
      * 该字段用于统一下单时上报场景信息，目前支持上报实际门店信息
      */
     private String scenInfo;
+    
+    /*
+     * 微信的订单号,支付后微信通知返回的数据
+     * 
+     */
+    private String transactionId;
 
     public String getDeviceInfo() {
         return deviceInfo;
@@ -212,6 +223,22 @@ public class WeixinPayRequest {
 
     public void setScenInfo(String scenInfo) {
         this.scenInfo = scenInfo;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
 }

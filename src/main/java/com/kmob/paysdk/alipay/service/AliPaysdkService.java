@@ -8,7 +8,7 @@ import com.kmob.paysdk.alipay.model.AliPayRequest;
  *
  * @author verne
  */
-public interface AliPayService {
+public interface AliPaysdkService {
     /**
      * APP支付
      * 

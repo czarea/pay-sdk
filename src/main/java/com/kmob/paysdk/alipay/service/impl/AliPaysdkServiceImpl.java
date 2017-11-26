@@ -12,15 +12,15 @@ import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.kmob.paysdk.alipay.config.AliPayConfig;
 import com.kmob.paysdk.alipay.model.AliPayRequest;
-import com.kmob.paysdk.alipay.service.AliPayService;
+import com.kmob.paysdk.alipay.service.AliPaysdkService;
 
 /**
  * 支付宝支付接口实现类
  *
  * @author verne
  */
-public class AliPayServiceImpl implements AliPayService {
-    private static final Logger logger = LoggerFactory.getLogger(AliPayServiceImpl.class);
+public class AliPaysdkServiceImpl implements AliPaysdkService {
+    private static final Logger logger = LoggerFactory.getLogger(AliPaysdkServiceImpl.class);
 
     private static final String API_GATEWAY_URL = "https://openapi.alipay.com/gateway.do";
 
@@ -29,9 +29,9 @@ public class AliPayServiceImpl implements AliPayService {
      */
     private AliPayConfig aliPayConfig;
 
-    public AliPayServiceImpl() {}
+    AliPaysdkServiceImpl() {}
 
-    public AliPayServiceImpl(AliPayConfig aliPayConfig) {
+    public AliPaysdkServiceImpl(AliPayConfig aliPayConfig) {
         this.aliPayConfig = aliPayConfig;
     }
 

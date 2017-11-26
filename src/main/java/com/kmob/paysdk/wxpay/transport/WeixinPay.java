@@ -3,6 +3,8 @@ package com.kmob.paysdk.wxpay.transport;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.util.StringUtils;
+
 import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
 import com.kmob.paysdk.wxpay.transport.WeixinPayConstants.SignType;
 
@@ -56,29 +58,6 @@ public class WeixinPay {
             this.signType = SignType.HMACSHA256;
         }
         this.wxPayRequest = new WeixinPayRequest(config);
-    }
-
-    private void checkWXPayConfig() throws Exception {
-        if (this.config == null) {
-            throw new Exception("config is null");
-        }
-        if (this.config.getAppID() == null || this.config.getAppID().trim().length() == 0) {
-            throw new Exception("appid in config is empty");
-        }
-        if (this.config.getMchID() == null || this.config.getMchID().trim().length() == 0) {
-            throw new Exception("appid in config is empty");
-        }
-        if (this.config.getWXPayDomain() == null) {
-            throw new Exception("config.getWXPayDomain() is null");
-        }
-
-        if (this.config.getHttpConnectTimeoutMs() < 10) {
-            throw new Exception("http connect timeout is too small");
-        }
-        if (this.config.getHttpReadTimeoutMs() < 10) {
-            throw new Exception("http read timeout is too small");
-        }
-
     }
 
     /**
@@ -343,9 +322,18 @@ public class WeixinPay {
      * @throws Exception
      */
     public Map<String, String> unifiedOrder(Map<String, String> reqData) throws Exception {
-        checkWXPayConfig();
+        checkData(reqData);
         return this.unifiedOrder(reqData, config.getHttpConnectTimeoutMs(),
                 this.config.getHttpReadTimeoutMs());
+    }
+    
+    private Map<String, String> checkData(Map<String, String> reqData){
+        if(StringUtils.isEmpty(reqData.get("body"))) {
+            Map<String, String> error = new HashMap<String,String>();
+            error.put("msg", "body is null!");
+            return error;
+        }
+        return null;
     }
 
 

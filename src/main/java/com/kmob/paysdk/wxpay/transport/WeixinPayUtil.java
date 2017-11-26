@@ -29,6 +29,7 @@ import com.kmob.paysdk.wxpay.transport.WeixinPayConstants.SignType;
 
 
 public class WeixinPayUtil {
+    private static final Logger logger = LoggerFactory.getLogger(WeixinPayUtil.class);
 
     /**
      * XML格式字符串转换为Map
@@ -56,11 +57,13 @@ public class WeixinPayUtil {
             try {
                 stream.close();
             } catch (Exception ex) {
-                // do nothing
+                logger.error("xml {} to map erroor", strXML, ex);
             }
             return data;
         } catch (Exception ex) {
-            WeixinPayUtil.getLogger().warn("Invalid XML, can not convert to map. Error message: {}. XML content: {}", ex.getMessage(), strXML);
+            WeixinPayUtil.getLogger().warn(
+                    "Invalid XML, can not convert to map. Error message: {}. XML content: {}",
+                    ex.getMessage(), strXML);
             throw ex;
         }
 
@@ -75,11 +78,11 @@ public class WeixinPayUtil {
      */
     public static String mapToXml(Map<String, String> data) throws Exception {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder= documentBuilderFactory.newDocumentBuilder();
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         org.w3c.dom.Document document = documentBuilder.newDocument();
         org.w3c.dom.Element root = document.createElement("xml");
         document.appendChild(root);
-        for (String key: data.keySet()) {
+        for (String key : data.keySet()) {
             String value = data.get(key);
             if (value == null) {
                 value = "";
@@ -97,11 +100,11 @@ public class WeixinPayUtil {
         StringWriter writer = new StringWriter();
         StreamResult result = new StreamResult(writer);
         transformer.transform(source, result);
-        String output = writer.getBuffer().toString(); //.replaceAll("\n|\r", "");
+        String output = writer.getBuffer().toString(); // .replaceAll("\n|\r", "");
         try {
             writer.close();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
+            logger.error("map {} to xml erroor", data, ex);
         }
         return output;
     }
@@ -114,7 +117,8 @@ public class WeixinPayUtil {
      * @param key API密钥
      * @return 含有sign字段的XML
      */
-    public static String generateSignedXml(final Map<String, String> data, String key) throws Exception {
+    public static String generateSignedXml(final Map<String, String> data, String key)
+            throws Exception {
         return generateSignedXml(data, key, SignType.MD5);
     }
 
@@ -126,7 +130,8 @@ public class WeixinPayUtil {
      * @param signType 签名类型
      * @return 含有sign字段的XML
      */
-    public static String generateSignedXml(final Map<String, String> data, String key, SignType signType) throws Exception {
+    public static String generateSignedXml(final Map<String, String> data, String key,
+            SignType signType) throws Exception {
         String sign = generateSignature(data, key, signType);
         data.put(WeixinPayConstants.FIELD_SIGN, sign);
         return mapToXml(data);
@@ -143,7 +148,7 @@ public class WeixinPayUtil {
      */
     public static boolean isSignatureValid(String xmlStr, String key) throws Exception {
         Map<String, String> data = xmlToMap(xmlStr);
-        if (!data.containsKey(WeixinPayConstants.FIELD_SIGN) ) {
+        if (!data.containsKey(WeixinPayConstants.FIELD_SIGN)) {
             return false;
         }
         String sign = data.get(WeixinPayConstants.FIELD_SIGN);
@@ -171,8 +176,9 @@ public class WeixinPayUtil {
      * @return 签名是否正确
      * @throws Exception
      */
-    public static boolean isSignatureValid(Map<String, String> data, String key, SignType signType) throws Exception {
-        if (!data.containsKey(WeixinPayConstants.FIELD_SIGN) ) {
+    public static boolean isSignatureValid(Map<String, String> data, String key, SignType signType)
+            throws Exception {
+        if (!data.containsKey(WeixinPayConstants.FIELD_SIGN)) {
             return false;
         }
         String sign = data.get(WeixinPayConstants.FIELD_SIGN);
@@ -186,7 +192,8 @@ public class WeixinPayUtil {
      * @param key API密钥
      * @return 签名
      */
-    public static String generateSignature(final Map<String, String> data, String key) throws Exception {
+    public static String generateSignature(final Map<String, String> data, String key)
+            throws Exception {
         return generateSignature(data, key, SignType.MD5);
     }
 
@@ -198,7 +205,8 @@ public class WeixinPayUtil {
      * @param signType 签名方式
      * @return 签名
      */
-    public static String generateSignature(final Map<String, String> data, String key, SignType signType) throws Exception {
+    public static String generateSignature(final Map<String, String> data, String key,
+            SignType signType) throws Exception {
         Set<String> keySet = data.keySet();
         String[] keyArray = keySet.toArray(new String[keySet.size()]);
         Arrays.sort(keyArray);
@@ -207,17 +215,17 @@ public class WeixinPayUtil {
             if (k.equals(WeixinPayConstants.FIELD_SIGN)) {
                 continue;
             }
-            if (data.get(k).trim().length() > 0) // 参数值为空，则不参与签名
+            // 参数值为空，则不参与签名
+            if (data.get(k) != null && data.get(k).trim().length() > 0) {
                 sb.append(k).append("=").append(data.get(k).trim()).append("&");
+            }
         }
         sb.append("key=").append(key);
         if (SignType.MD5.equals(signType)) {
             return MD5(sb.toString()).toUpperCase();
-        }
-        else if (SignType.HMACSHA256.equals(signType)) {
+        } else if (SignType.HMACSHA256.equals(signType)) {
             return HMACSHA256(sb.toString(), key);
-        }
-        else {
+        } else {
             throw new Exception(String.format("Invalid sign_type: %s", signType));
         }
     }
@@ -251,6 +259,7 @@ public class WeixinPayUtil {
 
     /**
      * 生成 HMACSHA256
+     * 
      * @param data 待处理数据
      * @param key 密钥
      * @return 加密结果
@@ -270,6 +279,7 @@ public class WeixinPayUtil {
 
     /**
      * 日志
+     * 
      * @return
      */
     public static Logger getLogger() {
@@ -279,14 +289,16 @@ public class WeixinPayUtil {
 
     /**
      * 获取当前时间戳，单位秒
+     * 
      * @return
      */
     public static long getCurrentTimestamp() {
-        return System.currentTimeMillis()/1000;
+        return System.currentTimeMillis() / 1000;
     }
 
     /**
      * 获取当前时间戳，单位毫秒
+     * 
      * @return
      */
     public static long getCurrentTimestampMs() {
@@ -295,6 +307,7 @@ public class WeixinPayUtil {
 
     /**
      * 生成 uuid， 即用来标识一笔单，也用做 nonce_str
+     * 
      * @return
      */
     public static String generateUUID() {

@@ -9,8 +9,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.kmob.paysdk.alipay.config.AliPayConfig;
-import com.kmob.paysdk.alipay.service.AliPayService;
-import com.kmob.paysdk.alipay.service.impl.AliPayServiceImpl;
+import com.kmob.paysdk.alipay.service.AliPaysdkService;
+import com.kmob.paysdk.alipay.service.impl.AliPaysdkServiceImpl;
+import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
+import com.kmob.paysdk.wxpay.service.WeixinPaysdkService;
+import com.kmob.paysdk.wxpay.service.impl.WeixinPaysdkServiceImpl;
 
 /**
  * {@link EnableAutoConfiguration Auto-Configuration} for paysdk
@@ -20,14 +23,21 @@ import com.kmob.paysdk.alipay.service.impl.AliPayServiceImpl;
  * @author verne
  */
 @Configuration
-@EnableConfigurationProperties(value = {AliPayConfig.class})
+@EnableConfigurationProperties(value = {AliPayConfig.class, WeixinPayConfig.class})
 public class PaysdkAutoConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(PaysdkAutoConfiguration.class);
-    
+
     @Bean
-    @ConditionalOnProperty(prefix="alipay",name="init")
-    public AliPayService aliPayService(AliPayConfig aliPayConfig) {
+    @ConditionalOnProperty(prefix = "alipay", name = "use")
+    public AliPaysdkService aliPayService(AliPayConfig aliPayConfig) {
         logger.debug("init AliPayService ........................................");
-        return new AliPayServiceImpl(aliPayConfig);
+        return new AliPaysdkServiceImpl(aliPayConfig);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "wxpay", name = "use")
+    public WeixinPaysdkService weixinPayService(WeixinPayConfig weixinPayConfig) throws Exception {
+        logger.debug("init WeixinPayService ........................................");
+        return new WeixinPaysdkServiceImpl(weixinPayConfig);
     }
 }
