@@ -24,14 +24,14 @@
 
 ```
 alipay:
-  use: true
+  use: true #启用支付宝支付
   appId: xxx
   partner: xxx
   notifyUrl: xxx
   privateKey: xxx
   alipayPublicKey: xxx
 wxpay:
-  use: true
+  use: true #启用微信支付
   appId: xxx
   mchId: xxx
   key: xxx
