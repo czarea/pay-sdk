@@ -11,7 +11,6 @@ import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.kmob.paysdk.alipay.config.AliPayConfig;
-import com.kmob.paysdk.alipay.model.AliPayRequest;
 import com.kmob.paysdk.alipay.service.AliPaysdkService;
 
 /**
@@ -36,9 +35,9 @@ public class AliPaysdkServiceImpl implements AliPaysdkService {
     }
 
     @Override
-    public AlipayTradeAppPayResponse appPay(AliPayRequest aliPayModel) throws Exception {
+    public AlipayTradeAppPayResponse appPay(AlipayTradeAppPayModel appPayModel) throws Exception {
         // 校验请求
-        validateRequest(aliPayModel);
+        validateRequest(appPayModel);
 
         AlipayClient alipayClient = new DefaultAlipayClient(API_GATEWAY_URL,
                 aliPayConfig.getAppId(), aliPayConfig.getPrivateKey(), aliPayConfig.getFormat(),
@@ -48,15 +47,7 @@ public class AliPaysdkServiceImpl implements AliPaysdkService {
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
 
         // SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
-        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-        model.setBody(aliPayModel.getBody());
-        model.setSubject(aliPayModel.getSubject());
-        model.setOutTradeNo(aliPayModel.getOutTradeNo());
-        model.setTimeoutExpress(aliPayConfig.getTimeoutExpress());
-
-        model.setTotalAmount(aliPayModel.getTotalAmount());
-        model.setProductCode(aliPayModel.getProductCode());
-        request.setBizModel(model);
+        request.setBizModel(appPayModel);
         request.setNotifyUrl(aliPayConfig.getNotifyUrl());
         try {
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
@@ -67,25 +58,25 @@ public class AliPaysdkServiceImpl implements AliPaysdkService {
         }
     }
 
-    private boolean validateRequest(AliPayRequest aliPayModel) throws Exception {
-        if (aliPayModel == null) {
+    private boolean validateRequest(AlipayTradeAppPayModel appPayModel) throws Exception {
+        if (appPayModel == null) {
             throw new RuntimeException("AliPayModel can not be null");
         }
 
-        if (StringUtils.isEmpty(aliPayModel.getBody())) {
+        if (StringUtils.isEmpty(appPayModel.getBody())) {
             throw new RuntimeException("AliPayModel's body can not be null");
         }
 
-        if (StringUtils.isEmpty(aliPayModel.getSubject())) {
+        if (StringUtils.isEmpty(appPayModel.getSubject())) {
             throw new RuntimeException("AliPayModel's Subject can not be null");
         }
-        if (StringUtils.isEmpty(aliPayModel.getOutTradeNo())) {
+        if (StringUtils.isEmpty(appPayModel.getOutTradeNo())) {
             throw new RuntimeException("AliPayModel's OutTradeNo can not be null");
         }
-        if (StringUtils.isEmpty(aliPayModel.getTotalAmount())) {
+        if (StringUtils.isEmpty(appPayModel.getTotalAmount())) {
             throw new RuntimeException("AliPayModel's TotalAmount can not be null");
         }
-        if (StringUtils.isEmpty(aliPayModel.getProductCode())) {
+        if (StringUtils.isEmpty(appPayModel.getProductCode())) {
             throw new RuntimeException("AliPayModel's ProductCode can not be null");
         }
 

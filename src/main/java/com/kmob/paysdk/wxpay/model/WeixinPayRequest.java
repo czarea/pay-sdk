@@ -9,15 +9,15 @@ public class WeixinPayRequest {
     /**
      * 终端设备号(门店号或收银设备ID)，默认请传"WEB"
      */
-    private String deviceInfo;
+    private String device_info;
     /**
      * 随机字符串，不长于32位
      */
-    private String nonceStr;
+    private String nonce_str;
     /**
-     * 签名类型，目前支持HMAC-SHA256和MD5，默认为MD5
+     * 签名类型，目前支持HMAC-SHA256和MD5，APP默认未HMAC-SHA256，公众号为MD5
      */
-    private String signType;
+    private String sign_type;
 
     /**
      * 商品描述交易字段格式根据不同的应用场景按照以下格式：
@@ -38,87 +38,88 @@ public class WeixinPayRequest {
     /**
      * 商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，且在同一个商户号下唯一
      */
-    private String outTradeNo;
+    private String out_trade_no;
 
     /**
      * 符合ISO
      * 4217标准的三位字母代码，默认人民币：CNY,其他值列表详见货币类型:https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=4_2
      */
-    private String feeType;
+    private String fee_type;
 
     /**
      * 订单总金额，单位为分
      */
-    private String totalAmount;
+    private String total_fee;
 
     /**
      * 用户端实际ip
      */
-    private String spbillCreateIp;
+    private String spbill_create_ip;
 
     /**
      * 订单生成时间，格式为yyyyMMddHHmmss，如2009年12月25日9点10分10秒表示为20091225091010
      */
-    private String timeStart;
+    private String time_start;
 
     /**
      * 订单失效时间，格式为yyyyMMddHHmmss，如2009年12月27日9点10分10秒表示为20091227091010
      */
-    private String timeExipre;
+    private String time_exipre;
 
     /**
      * 订单优惠标记，代金券或立减优惠功能的参数，说明详见代金券或立减优惠:https://pay.weixin.qq.com/wiki/doc/api/tools/sp_coupon.php?chapter=12_1
      */
-    private String goodsTag;
+    private String goods_tag;
 
     /**
      * 支付类型:JSAPI，NATIVE，APP等，说明详见参数规定:https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=4_2
      */
-    private String tradeType;
+    private String trade_type;
 
     /**
      * no_credit--指定不能使用信用卡支付
      */
-    private String limitPay;
+    private String limit_pay;
     
     /**
      * 商品ID
      */
-    private String productId;
+    private String product_id;
 
     /**
      * 该字段用于统一下单时上报场景信息，目前支持上报实际门店信息
      */
-    private String scenInfo;
+    private String scene_info;
     
     /*
      * 微信的订单号,支付后微信通知返回的数据
      * 
      */
-    private String transactionId;
+    private String transaction_id;
 
-    public String getDeviceInfo() {
-        return deviceInfo;
+
+    public String getDevice_info() {
+        return device_info;
     }
 
-    public void setDeviceInfo(String deviceInfo) {
-        this.deviceInfo = deviceInfo;
+    public void setDevice_info(String device_info) {
+        this.device_info = device_info;
     }
 
-    public String getNonceStr() {
-        return nonceStr;
+    public String getNonce_str() {
+        return nonce_str;
     }
 
-    public void setNonceStr(String nonceStr) {
-        this.nonceStr = nonceStr;
+    public void setNonce_str(String nonce_str) {
+        this.nonce_str = nonce_str;
     }
 
-    public String getSignType() {
-        return signType;
+    public String getSign_type() {
+        return sign_type;
     }
 
-    public void setSignType(String signType) {
-        this.signType = signType;
+    public void setSign_type(String sign_type) {
+        this.sign_type = sign_type;
     }
 
     public String getBody() {
@@ -145,100 +146,112 @@ public class WeixinPayRequest {
         this.attach = attach;
     }
 
-    public String getOutTradeNo() {
-        return outTradeNo;
+    public String getOut_trade_no() {
+        return out_trade_no;
     }
 
-    public void setOutTradeNo(String outTradeNo) {
-        this.outTradeNo = outTradeNo;
+    public void setOut_trade_no(String out_trade_no) {
+        this.out_trade_no = out_trade_no;
     }
 
-    public String getFeeType() {
-        return feeType;
+    public String getFee_type() {
+        return fee_type;
     }
 
-    public void setFeeType(String feeType) {
-        this.feeType = feeType;
+    public void setFee_type(String fee_type) {
+        this.fee_type = fee_type;
     }
 
-    public String getTotalAmount() {
-        return totalAmount;
+    public String getTotal_fee() {
+        return total_fee;
     }
 
-    public void setTotalAmount(String totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setTotal_fee(String total_fee) {
+        this.total_fee = total_fee;
     }
 
-    public String getSpbillCreateIp() {
-        return spbillCreateIp;
+    public String getSpbill_create_ip() {
+        return spbill_create_ip;
     }
 
-    public void setSpbillCreateIp(String spbillCreateIp) {
-        this.spbillCreateIp = spbillCreateIp;
+    public void setSpbill_create_ip(String spbill_create_ip) {
+        this.spbill_create_ip = spbill_create_ip;
     }
 
-    public String getTimeStart() {
-        return timeStart;
+    public String getTime_start() {
+        return time_start;
     }
 
-    public void setTimeStart(String timeStart) {
-        this.timeStart = timeStart;
+    public void setTime_start(String time_start) {
+        this.time_start = time_start;
     }
 
-    public String getTimeExipre() {
-        return timeExipre;
+    public String getTime_exipre() {
+        return time_exipre;
     }
 
-    public void setTimeExipre(String timeExipre) {
-        this.timeExipre = timeExipre;
+    public void setTime_exipre(String time_exipre) {
+        this.time_exipre = time_exipre;
     }
 
-    public String getGoodsTag() {
-        return goodsTag;
+    public String getGoods_tag() {
+        return goods_tag;
     }
 
-    public void setGoodsTag(String goodsTag) {
-        this.goodsTag = goodsTag;
+    public void setGoods_tag(String goods_tag) {
+        this.goods_tag = goods_tag;
     }
 
-    public String getTradeType() {
-        return tradeType;
+    public String getTrade_type() {
+        return trade_type;
     }
 
-    public void setTradeType(String tradeType) {
-        this.tradeType = tradeType;
+    public void setTrade_type(String trade_type) {
+        this.trade_type = trade_type;
     }
 
-    public String getLimitPay() {
-        return limitPay;
+    public String getLimit_pay() {
+        return limit_pay;
     }
 
-    public void setLimitPay(String limitPay) {
-        this.limitPay = limitPay;
+    public void setLimit_pay(String limit_pay) {
+        this.limit_pay = limit_pay;
     }
 
-    public String getScenInfo() {
-        return scenInfo;
+    public String getProduct_id() {
+        return product_id;
     }
 
-    public void setScenInfo(String scenInfo) {
-        this.scenInfo = scenInfo;
+    public void setProduct_id(String product_id) {
+        this.product_id = product_id;
     }
 
-    public String getTransactionId() {
-        return transactionId;
+    public String getScene_info() {
+        return scene_info;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setScene_info(String scene_info) {
+        this.scene_info = scene_info;
     }
 
-    public String getProductId() {
-        return productId;
+    public String getTransaction_id() {
+        return transaction_id;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setTransaction_id(String transaction_id) {
+        this.transaction_id = transaction_id;
+    }
+
+    @Override
+    public String toString() {
+        return "WeixinPayRequest [device_info=" + device_info + ", nonce_str=" + nonce_str
+                + ", sign_type=" + sign_type + ", body=" + body + ", detail=" + detail + ", attach="
+                + attach + ", out_trade_no=" + out_trade_no + ", fee_type=" + fee_type
+                + ", total_fee=" + total_fee + ", spbill_create_ip=" + spbill_create_ip
+                + ", time_start=" + time_start + ", time_exipre=" + time_exipre + ", goods_tag="
+                + goods_tag + ", trade_type=" + trade_type + ", limit_pay=" + limit_pay
+                + ", product_id=" + product_id + ", scene_info=" + scene_info + ", transaction_id="
+                + transaction_id + "]";
     }
 
 }

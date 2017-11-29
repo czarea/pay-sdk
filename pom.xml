@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kmob</groupId>
 	<artifactId>paysdk</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.1</version>
 	<name>${project.artifactId}</name>
 	<description>千陌支付SDK</description>
 	<scm>
@@ -20,18 +20,24 @@
 			</roles>
 		</developer>
 	</developers>
-	<repositories>
+	<distributionManagement>
 		<repository>
-			<id>1000mob</id>
-			<name>1000mob Nexus Repository</name>
-			<url>http://59.110.6.79:9081/repository/maven-public/</url>
+			<id>1000mob-nexus-wan</id>
+			<name>kmob-wan-repository</name>
+			<url>http://59.110.6.79:9081/repository/maven-releases/</url>
 		</repository>
-	</repositories>
+		<snapshotRepository>
+			<id>1000mob-nexus-wan</id>
+			<name>kmob-wan-repository</name>
+			<url>http://59.110.6.79:9081/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<spring-boot.version>1.5.4.RELEASE</spring-boot.version>
+		<servlet-api.version>4.0.0</servlet-api.version>
 
 		<java.version>1.8</java.version>
 		<fastjson.version>1.2.31</fastjson.version>
@@ -51,8 +57,19 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<version>${spring-boot.version}</version>
+			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
@@ -84,7 +101,7 @@
 			<artifactId>fastjson</artifactId>
 			<version>${fastjson.version}</version>
 		</dependency>
-		
+
 		<!-- test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

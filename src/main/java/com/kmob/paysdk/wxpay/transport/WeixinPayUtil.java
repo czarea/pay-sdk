@@ -61,7 +61,7 @@ public class WeixinPayUtil {
             }
             return data;
         } catch (Exception ex) {
-            WeixinPayUtil.getLogger().warn(
+            logger.warn(
                     "Invalid XML, can not convert to map. Error message: {}. XML content: {}",
                     ex.getMessage(), strXML);
             throw ex;
@@ -85,7 +85,7 @@ public class WeixinPayUtil {
         for (String key : data.keySet()) {
             String value = data.get(key);
             if (value == null) {
-                value = "";
+                continue;
             }
             value = value.trim();
             org.w3c.dom.Element filed = document.createElement(key);

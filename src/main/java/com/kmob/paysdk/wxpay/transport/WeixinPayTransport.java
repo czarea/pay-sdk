@@ -24,12 +24,16 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
 
-public class WeixinPayRequest {
+public class WeixinPayTransport {
+    private static final Logger logger = LoggerFactory.getLogger(WeixinPayTransport.class);
+    
     private WeixinPayConfig config;
-    public WeixinPayRequest(WeixinPayConfig config) throws Exception{
+    public WeixinPayTransport(WeixinPayConfig config) throws Exception{
 
         this.config = config;
     }
@@ -139,6 +143,7 @@ public class WeixinPayRequest {
                     firstHasDnsErr,
                     firstHasConnectTimeout,
                     firstHasReadTimeout);
+            logger.debug("request is {} to weixin ,result is {}",data,result);
             return result;
         }
         catch (UnknownHostException ex) {  // dns 解析错误，或域名不存在

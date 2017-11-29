@@ -23,6 +23,7 @@ public class WeixinPayDomainSimpleImpl implements IWeixinPayDomain {
         return WeixinpayDomainHolder.holder;
     }
 
+    @Override
     public synchronized void report(final String domain, long elapsedTimeMillis,
             final Exception ex) {
         DomainStatics info = domainData.get(domain);
@@ -49,6 +50,7 @@ public class WeixinPayDomainSimpleImpl implements IWeixinPayDomain {
         }
     }
 
+    @Override
     public synchronized DomainInfo getDomain(final WeixinPayConfig config) {
         DomainStatics primaryDomain = domainData.get(WeixinPayConstants.DOMAIN_API);
         if (primaryDomain == null || primaryDomain.isGood()) {
@@ -71,7 +73,9 @@ public class WeixinPayDomainSimpleImpl implements IWeixinPayDomain {
             switchToAlternateDomainTime = 0;
             primaryDomain.resetCount();
             DomainStatics alternateDomain = domainData.get(WeixinPayConstants.DOMAIN_API2);
-            if (alternateDomain != null) alternateDomain.resetCount();
+            if (alternateDomain != null) {
+                alternateDomain.resetCount();
+            }
             return new DomainInfo(WeixinPayConstants.DOMAIN_API, true);
         }
     }

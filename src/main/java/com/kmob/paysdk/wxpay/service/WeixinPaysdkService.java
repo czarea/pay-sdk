@@ -2,7 +2,12 @@ package com.kmob.paysdk.wxpay.service;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.kmob.paysdk.dto.ResultInfo;
 import com.kmob.paysdk.wxpay.model.WeixinDownLoadBillRequest;
+import com.kmob.paysdk.wxpay.model.WeixinNotifyResponse;
 import com.kmob.paysdk.wxpay.model.WeixinPayRequest;
 import com.kmob.paysdk.wxpay.model.WeixinRefundRequest;
 
@@ -20,6 +25,34 @@ public interface WeixinPaysdkService {
      * @throws Exception
      */
     Map<String, String> unifiedOrder(WeixinPayRequest weixinPayModel) throws Exception;
+    
+    /**
+     * 统一下单
+     * 
+     * @param params 所有参数都上传到微信
+     * @return 下单结果xml解析后的map类型，详细参考：https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_1
+     * @throws Exception
+     */
+    Map<String, String> unifiedOrder(Map<String,String> params) throws Exception;
+    
+    /**
+     * APP支付
+     * 完成了统一下单 ->组装参数给到app
+     * 
+     * @param params
+     * @return 返回APP支付调起支付接口所需参数
+     */
+    ResultInfo appPay(Map<String,String> params) throws Exception;
+    
+    /**
+     * 
+     * 
+     * @param request
+     * @param response
+     * @param notifyService
+     * @return
+     */
+    WeixinNotifyResponse notify(HttpServletRequest request, HttpServletResponse response,NotifyService notifyService) throws Exception;
 
     /**
      * 查询订单

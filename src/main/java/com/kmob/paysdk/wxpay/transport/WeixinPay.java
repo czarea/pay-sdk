@@ -20,7 +20,7 @@ public class WeixinPay {
     private boolean autoReport;
     private boolean useSandbox;
     private String notifyUrl;
-    private WeixinPayRequest wxPayRequest;
+    private WeixinPayTransport wxPayRequest;
 
     public WeixinPay(final WeixinPayConfig config) throws Exception {
         this(config, null, true, false);
@@ -57,7 +57,7 @@ public class WeixinPay {
         } else {
             this.signType = SignType.HMACSHA256;
         }
-        this.wxPayRequest = new WeixinPayRequest(config);
+        this.wxPayRequest = new WeixinPayTransport(config);
     }
 
     /**

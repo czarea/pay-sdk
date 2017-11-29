@@ -1,9 +1,10 @@
 package com.kmob.paysdk.wxpay.transport;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,6 +20,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
+import com.kmob.paysdk.util.DefaultThreadFactory;
 import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
 
 /**
@@ -121,20 +123,16 @@ public class WeixinPayReport {
         this.config = config;
         reportMsgQueue = new LinkedBlockingQueue<String>(config.getReportQueueMaxSize());
 
-        // 添加处理线程
-        executorService =
-                Executors.newFixedThreadPool(config.getReportWorkerNum(), new ThreadFactory() {
-                    public Thread newThread(Runnable r) {
-                        Thread t = Executors.defaultThreadFactory().newThread(r);
-                        t.setDaemon(true);
-                        return t;
-                    }
-                });
+        ThreadFactory namedThreadFactory = new DefaultThreadFactory();
+        ExecutorService executorPool = new ThreadPoolExecutor(5, 200,
+            0L, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory , new ThreadPoolExecutor.AbortPolicy());
 
         if (config.shouldAutoReport()) {
             WeixinPayUtil.getLogger().info("report worker num: {}", config.getReportWorkerNum());
             for (int i = 0; i < config.getReportWorkerNum(); ++i) {
                 executorService.execute(new Runnable() {
+                    @Override
                     public void run() {
                         while (true) {
                             // 先用 take 获取数据

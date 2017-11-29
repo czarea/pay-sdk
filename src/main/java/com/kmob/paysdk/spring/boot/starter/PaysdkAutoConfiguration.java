@@ -30,14 +30,14 @@ public class PaysdkAutoConfiguration {
     @Bean
     @ConditionalOnProperty(prefix = "alipay", name = "use")
     public AliPaysdkService aliPayService(AliPayConfig aliPayConfig) {
-        logger.debug("init AliPayService ........................................");
+        logger.debug("init AliPayService success!");
         return new AliPaysdkServiceImpl(aliPayConfig);
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "wxpay", name = "use")
     public WeixinPaysdkService weixinPayService(WeixinPayConfig weixinPayConfig) throws Exception {
-        logger.debug("init WeixinPayService ........................................");
+        logger.debug("init WeixinPayService successs!");
         return new WeixinPaysdkServiceImpl(weixinPayConfig);
     }
 }
