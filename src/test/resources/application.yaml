@@ -4,9 +4,7 @@ spring:
   main:
     banner-mode: 'off'
   application:
-    name: etcm-billing
-  profiles:
-    active: local
+    name: kmob-paysdk
   thymeleaf:
     cache: false
   http:
@@ -14,6 +12,7 @@ spring:
       preferred-json-mapper: fastjson
 alipay:
   use: true
+  useController: true
   appId: 2017111409928654
   partner: privateKey
   notifyUrl: http://120.77.146.227:9090/api/billing/alipay/payback
@@ -21,10 +20,8 @@ alipay:
   alipayPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwfepabKZygta30jb8NLOvWjAHK6WXyp25VEZ0utAZYqvz72hyO+JrjCm3jiM6rQl56LkLTLjKVewPi2it34PcmxKtTp5C16RdaXCmv1d2YAb6soxTo3C9/osjpQcbMBEVB0c6SpV0FBVmC8q9hAJh+Vr7mKOH/mulNiEDrWx6JvubP2sU8v5o0y6ymKj2PtlNBWF9GeuYBpKdTQ0WpeSukAizd45ilNK5czeYkLpbqg/itAkrw4Z4Kg4IdElR7ud4TZi4cjpF9bFGbKBdx2Qtrf+HJOlgrndkOnBXiTz3XEhNqLGTl5nWW4J4rtW+4TxWdho3+qsrpnN5ib4nUKDFwIDAQAB
 wxpay:
   use: true
-  usecontrollerss: true
+  useController: true
   appId: wx7a38a3b777c31606
   mchId: 1493001312
   key: MIG23A0GE12GSIb3DeQBAQUaa4GNADcA
   notifyUrl: http://120.77.146.227:9090/api/billing/wxpay/payback
-logging:
-  config: classpath:logback-${spring.profiles.active}.xml

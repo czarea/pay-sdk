@@ -16,8 +16,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kmob.paysdk.util.MapperUtil;
 import com.kmob.paysdk.wxpay.response.WeixinNotifyResponse;
@@ -42,6 +44,12 @@ public class WeixinPayNotifyHandlerController {
 
     public WeixinPayNotifyHandlerController(WeixinNotifyHandlerService weixinNotifyHandlerService) {
         this.weixinNotifyHandlerService = weixinNotifyHandlerService;
+    }
+    
+    @GetMapping("test")
+    @ResponseBody
+    public String res() {
+        return "success";
     }
 
 
@@ -69,7 +77,7 @@ public class WeixinPayNotifyHandlerController {
         String result = new String(outSteam.toByteArray(), "utf-8");
         logger.debug("weixin notify request xml data is {}", result);
         if (StringUtils.isEmpty(result)) {
-            writer.write("weixin notify request xml data is empty!");
+            writer.write(WeixinNotifyResponse.errorXml());
             writer.flush();
             return;
         }
@@ -79,6 +87,9 @@ public class WeixinPayNotifyHandlerController {
             map = WeixinPayUtil.xmlToMap(result);
         } catch (Exception e) {
             logger.error("weixin notify request xml data is {}", result, e);
+            writer.write(WeixinNotifyResponse.errorXml());
+            writer.flush();
+            return;
         }
         try {
             WeixinNotifyResponse responseNotify = weixinNotifyHandlerService.notifyHandler(map);
@@ -91,6 +102,8 @@ public class WeixinPayNotifyHandlerController {
             writer.flush();
         } catch (Exception e) {
             logger.error("wxpay order notify to xml string error ,the response is {}", result, e);
+            writer.write(WeixinNotifyResponse.errorXml());
+            writer.flush();
         }
     }
 }

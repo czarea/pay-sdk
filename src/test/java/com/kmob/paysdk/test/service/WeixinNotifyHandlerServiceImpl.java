@@ -1,4 +1,4 @@
-package com.kmob.paysdk.wxpay.service.impl;
+package com.kmob.paysdk.test.service;
 
 import java.util.Map;
 
