@@ -2,19 +2,19 @@ package com.kmob.paysdk.wxpay.service;
 
 import java.util.Map;
 
-import com.kmob.paysdk.dto.ResultInfo;
+import com.kmob.paysdk.wxpay.response.WeixinNotifyResponse;
 
 /**
  * 支付通知回调
  *
  * @author verne
  */
-public interface NotifyService {
+public interface WeixinNotifyHandlerService {
     /**
      * 支付通知回调业务处理
      * 
      * @param datas
      * @return
      */
-    ResultInfo notifyHandler(Map<String,String> datas);
+    WeixinNotifyResponse notifyHandler(Map<String,String> datas);
 }

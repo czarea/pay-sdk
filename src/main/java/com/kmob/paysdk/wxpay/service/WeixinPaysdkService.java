@@ -6,10 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kmob.paysdk.dto.ResultInfo;
-import com.kmob.paysdk.wxpay.model.WeixinDownLoadBillRequest;
-import com.kmob.paysdk.wxpay.model.WeixinNotifyResponse;
-import com.kmob.paysdk.wxpay.model.WeixinPayRequest;
-import com.kmob.paysdk.wxpay.model.WeixinRefundRequest;
+import com.kmob.paysdk.wxpay.request.WeixinDownLoadBillRequest;
+import com.kmob.paysdk.wxpay.request.WeixinPayRequest;
+import com.kmob.paysdk.wxpay.request.WeixinRefundRequest;
+import com.kmob.paysdk.wxpay.response.WeixinNotifyResponse;
 
 /**
  * 微信支付抽象接口
@@ -52,7 +52,7 @@ public interface WeixinPaysdkService {
      * @param notifyService
      * @return
      */
-    WeixinNotifyResponse notify(HttpServletRequest request, HttpServletResponse response,NotifyService notifyService) throws Exception;
+    WeixinNotifyResponse notify(HttpServletRequest request, HttpServletResponse response,WeixinNotifyHandlerService notifyService) throws Exception;
 
     /**
      * 查询订单
@@ -61,7 +61,7 @@ public interface WeixinPaysdkService {
      * @return 微信返回xml封装的map对象 ，详细可参考：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_3
      * @throws Exception
      */
-    Map<String, String> queryOrder(String tradeNo) throws Exception;
+    Map<String, String> queryOrder(String transactionId,String tradeNo) throws Exception;
 
     /**
      * 关闭订单

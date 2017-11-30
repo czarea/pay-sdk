@@ -116,6 +116,9 @@ public class WeixinPayReport {
     private LinkedBlockingQueue<String> reportMsgQueue = null;
     private WeixinPayConfig config;
     private ExecutorService executorService;
+    
+    private static final int CORE_POOL_SIZE = 2;
+    private static final int MAXIMUM_POOL_SIZE = 10;
 
     private volatile static WeixinPayReport INSTANCE;
 
@@ -124,7 +127,7 @@ public class WeixinPayReport {
         reportMsgQueue = new LinkedBlockingQueue<String>(config.getReportQueueMaxSize());
 
         ThreadFactory namedThreadFactory = new DefaultThreadFactory();
-        ExecutorService executorPool = new ThreadPoolExecutor(5, 200,
+        executorService = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
             0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory , new ThreadPoolExecutor.AbortPolicy());
 

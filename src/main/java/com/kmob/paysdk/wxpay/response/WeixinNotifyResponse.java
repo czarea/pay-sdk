@@ -1,4 +1,4 @@
-package com.kmob.paysdk.wxpay.model;
+package com.kmob.paysdk.wxpay.response;
 
 /**
  * 返回微信实体

@@ -1,4 +1,4 @@
-package com.kmob.paysdk.wxpay.model;
+package com.kmob.paysdk.wxpay.request;
 
 /**
  * 下载账单实体

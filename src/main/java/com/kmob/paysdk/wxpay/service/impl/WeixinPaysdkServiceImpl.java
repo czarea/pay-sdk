@@ -3,6 +3,7 @@ package com.kmob.paysdk.wxpay.service.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,13 +20,13 @@ import org.springframework.util.StringUtils;
 
 import com.kmob.paysdk.dto.ResultInfo;
 import com.kmob.paysdk.util.MapperUtil;
+import com.kmob.paysdk.wxpay.ParameterKeyConstants;
 import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
-import com.kmob.paysdk.wxpay.model.ParameterConstans;
-import com.kmob.paysdk.wxpay.model.WeixinDownLoadBillRequest;
-import com.kmob.paysdk.wxpay.model.WeixinNotifyResponse;
-import com.kmob.paysdk.wxpay.model.WeixinPayRequest;
-import com.kmob.paysdk.wxpay.model.WeixinRefundRequest;
-import com.kmob.paysdk.wxpay.service.NotifyService;
+import com.kmob.paysdk.wxpay.request.WeixinDownLoadBillRequest;
+import com.kmob.paysdk.wxpay.request.WeixinPayRequest;
+import com.kmob.paysdk.wxpay.request.WeixinRefundRequest;
+import com.kmob.paysdk.wxpay.response.WeixinNotifyResponse;
+import com.kmob.paysdk.wxpay.service.WeixinNotifyHandlerService;
 import com.kmob.paysdk.wxpay.service.WeixinPaysdkService;
 import com.kmob.paysdk.wxpay.transport.WeixinPay;
 import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
@@ -38,21 +39,8 @@ import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
 public class WeixinPaysdkServiceImpl implements WeixinPaysdkService{
     private static final Logger logger = LoggerFactory.getLogger(WeixinPaysdkServiceImpl.class);
     
-    private static final String BODY_KEY = "body";
-    private static final String OUT_TRADE_NO_KEY = "out_trade_no";
-    private static final String DEVICE_INFO_KEY = "device_info";
-    private static final String FEE_TYPE_KEY = "fee_type";
-    private static final String TOTAL_FEE_KEY = "total_fee";
-    private static final String SPBILL_CREATE_IP_KEY = "spbill_create_ip";
-    private static final String NOTIFY_URL_KEY = "notify_url";
-    private static final String TRADE_TYPE_KEY = "trade_type";
-    private static final String PRODUCT_ID_KEY = "product_id";
     private static final String WX_RESULT_SUCCESS = "SUCCESS";
-    private static final String TOTALFEE_KEY = "totalAmount";
     private static final String PACKAGE_VALUE = "Sign=WXPay";
-    private static final String WX_RESULT_MSG_KEY = "return_code";
-    private static final String WX_RESULT_CODE_KEY = "result_code";
-    private static final String TRANSACTION_ID_KEY = "transaction_id";
     
     
     
@@ -73,21 +61,21 @@ public class WeixinPaysdkServiceImpl implements WeixinPaysdkService{
     public ResultInfo appPay(Map<String, String> params) throws Exception {
         ResultInfo result = new ResultInfo();
         Map<String,String> unifiedOrderResponse = weixinpay.unifiedOrder(params);
-        if (!WX_RESULT_SUCCESS.equals(unifiedOrderResponse.get(WX_RESULT_CODE_KEY))) {
+        if (!WX_RESULT_SUCCESS.equals(unifiedOrderResponse.get(ParameterKeyConstants.unifiedResponse.RESULT_CODE))) {
             result.setCode(UNIFIED_ORDER_ERROR);
-            result.setMsg(unifiedOrderResponse.get(WX_RESULT_MSG_KEY));
+            result.setMsg(unifiedOrderResponse.get(ParameterKeyConstants.unifiedResponse.RETURN_MSG));
             return result;
         }
         
         SortedMap<String,String> parameters = new TreeMap<String,String>();
         
         String timestamp = String.valueOf(WeixinPayUtil.getCurrentTimestamp());
-        parameters.put(ParameterConstans.appPay.APPID, unifiedOrderResponse.get("appid"));
-        parameters.put(ParameterConstans.appPay.PARTNERID, unifiedOrderResponse.get("mch_id"));
-        parameters.put(ParameterConstans.appPay.PREPAYID, unifiedOrderResponse.get("prepay_id"));
-        parameters.put(ParameterConstans.appPay.PACKAGE_VALUE, PACKAGE_VALUE);
-        parameters.put(ParameterConstans.appPay.NONCESTR, unifiedOrderResponse.get("nonce_str"));
-        parameters.put(ParameterConstans.appPay.TIMESTAMP, timestamp);
+        parameters.put(ParameterKeyConstants.appPay.APPID, weixinPayConfig.getAppId());
+        parameters.put(ParameterKeyConstants.appPay.PARTNERID, weixinPayConfig.getMchID());
+        parameters.put(ParameterKeyConstants.appPay.PREPAYID, unifiedOrderResponse.get(ParameterKeyConstants.unifiedResponse.PREPAY_ID));
+        parameters.put(ParameterKeyConstants.appPay.PACKAGE_VALUE, PACKAGE_VALUE);
+        parameters.put(ParameterKeyConstants.appPay.NONCESTR, unifiedOrderResponse.get(ParameterKeyConstants.unifiedResponse.NONCE_STR));
+        parameters.put(ParameterKeyConstants.appPay.TIMESTAMP, timestamp);
         StringBuffer sb = new StringBuffer();
         Set<Entry<String, String>> es = parameters.entrySet();
         Iterator<Entry<String, String>> it = es.iterator();
@@ -105,7 +93,7 @@ public class WeixinPaysdkServiceImpl implements WeixinPaysdkService{
         sb.append("key=" + weixinPayConfig.getKey());
         
         String sign = WeixinPayUtil.HMACSHA256(sb.toString(),weixinPayConfig.getKey());
-        parameters.put(ParameterConstans.appPay.SIGN, sign);
+        parameters.put(ParameterKeyConstants.appPay.SIGN, sign);
         result.setData(parameters);
         return result;
     }
@@ -128,47 +116,73 @@ public class WeixinPaysdkServiceImpl implements WeixinPaysdkService{
     }
 
     @Override
-    public Map<String, String> queryOrder(String tradeNo) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+    public Map<String, String> queryOrder(String transactionId,String tradeNo) throws Exception {
+        Map<String, String> reqData = new HashMap<String,String>();
+        if(!StringUtils.isEmpty(transactionId)) {
+            reqData.put(ParameterKeyConstants.notifyRequest.TRANSACTION_ID, transactionId);
+            return weixinpay.orderQuery(reqData );
+        }else if(!StringUtils.isEmpty(tradeNo)) {
+            reqData.put(ParameterKeyConstants.notifyRequest.OUT_TRADE_NO, transactionId);
+            return weixinpay.orderQuery(reqData );
+        }else {
+            reqData.put(ParameterKeyConstants.unifiedResponse.RETURN_CODE, "FAIL");
+            reqData.put(ParameterKeyConstants.unifiedResponse.RETURN_MSG, "参数不能为空！");
+            return reqData;
+        }
     }
 
     @Override
     public Map<String, String> closedOrder(String outTradeNo) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> reqData = new HashMap<String,String>();
+        if(!StringUtils.isEmpty(outTradeNo)) {
+            reqData.put(ParameterKeyConstants.notifyRequest.OUT_TRADE_NO, outTradeNo);
+            return weixinpay.closeOrder(reqData );
+        }else {
+            reqData.put(ParameterKeyConstants.unifiedResponse.RETURN_CODE, "FAIL");
+            reqData.put(ParameterKeyConstants.unifiedResponse.RETURN_MSG, "商户订单号不能为空！");
+            return reqData;
+        }
     }
 
     @Override
     public Map<String, String> reverseOrder(String transactionId, String outTradeNo)
             throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> reqData = new HashMap<String,String>();
+        if(!StringUtils.isEmpty(outTradeNo)) {
+            reqData.put(ParameterKeyConstants.notifyRequest.TRANSACTION_ID, transactionId);
+            reqData.put(ParameterKeyConstants.notifyRequest.OUT_TRADE_NO, outTradeNo);
+            return weixinpay.reverse(reqData );
+        }else {
+            reqData.put(ParameterKeyConstants.unifiedResponse.RETURN_CODE, "FAIL");
+            reqData.put(ParameterKeyConstants.unifiedResponse.RETURN_MSG, "商户订单号不能为空！");
+            return reqData;
+        }
     }
 
     @Override
     public Map<String, String> refund(WeixinRefundRequest request) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> reqData = MapperUtil.beanToStringMap(request);
+        return weixinpay.refund(reqData );
     }
 
     @Override
     public Map<String, String> refundQuery(WeixinRefundRequest request) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> reqData = MapperUtil.beanToStringMap(request);
+        return weixinpay.refundQuery(reqData);
     }
 
     @Override
     public Map<String, String> downloadBill(WeixinDownLoadBillRequest request) throws Exception {
         // TODO Auto-generated method stub
+        Map<String, String> reqData = MapperUtil.beanToStringMap(request);
+        weixinpay.downloadBill(reqData);
         return null;
     }
 
     @Override
     public WeixinNotifyResponse notify(HttpServletRequest request, HttpServletResponse response,
-            NotifyService notifyService) throws Exception{
+            WeixinNotifyHandlerService notifyService) throws Exception{
         // TODO Auto-generated method stub
-        WeixinNotifyResponse res = new WeixinNotifyResponse();
         PrintWriter writer = response.getWriter();
         InputStream inStream = request.getInputStream();
         ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
@@ -183,12 +197,15 @@ public class WeixinPaysdkServiceImpl implements WeixinPaysdkService{
 
         if (StringUtils.isEmpty(result)) {
             writer.write("request parameter is empty!");
-            return res;
+            throw new Exception("weixin notify request parameter is empty!");
         }
 
-        Map<String, String> map = WeixinPayUtil.xmlToMap(result);
+        Map<String, String> notifyRequestData = WeixinPayUtil.xmlToMap(result);
         
-        return res;
+        
+        WeixinNotifyResponse notifyResponse = notifyService.notifyHandler(notifyRequestData);
+        
+        return notifyResponse;
     }
 
 }

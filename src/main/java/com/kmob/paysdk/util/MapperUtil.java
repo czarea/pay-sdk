@@ -10,7 +10,7 @@ import org.springframework.cglib.beans.BeanMap;
 import org.springframework.util.StringUtils;
 
 /**
- * map工具类，
+ * map工具类
  *
  * @author verne
  */

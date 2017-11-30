@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.kmob.paysdk.util.MapperUtil;
-import com.kmob.paysdk.wxpay.model.WeixinPayRequest;
+import com.kmob.paysdk.wxpay.request.WeixinPayRequest;
 import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
 
 public class MapperUtilTest {

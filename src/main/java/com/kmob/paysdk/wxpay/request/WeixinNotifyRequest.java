@@ -1,4 +1,4 @@
-package com.kmob.paysdk.wxpay.model;
+package com.kmob.paysdk.wxpay.request;
 
 import java.util.Map;
 
@@ -93,6 +93,7 @@ public class WeixinNotifyRequest {
      * 支付完成时间
      */
     private String time_end;
+    
     public String getDevice_info() {
         return device_info;
     }

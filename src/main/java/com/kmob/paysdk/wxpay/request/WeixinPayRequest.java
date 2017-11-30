@@ -1,4 +1,4 @@
-package com.kmob.paysdk.wxpay.model;
+package com.kmob.paysdk.wxpay.request;
 
 /**
  * 微信支付请求model
@@ -80,7 +80,7 @@ public class WeixinPayRequest {
      * no_credit--指定不能使用信用卡支付
      */
     private String limit_pay;
-    
+
     /**
      * 商品ID
      */
@@ -90,12 +90,6 @@ public class WeixinPayRequest {
      * 该字段用于统一下单时上报场景信息，目前支持上报实际门店信息
      */
     private String scene_info;
-    
-    /*
-     * 微信的订单号,支付后微信通知返回的数据
-     * 
-     */
-    private String transaction_id;
 
 
     public String getDevice_info() {
@@ -234,14 +228,6 @@ public class WeixinPayRequest {
         this.scene_info = scene_info;
     }
 
-    public String getTransaction_id() {
-        return transaction_id;
-    }
-
-    public void setTransaction_id(String transaction_id) {
-        this.transaction_id = transaction_id;
-    }
-
     @Override
     public String toString() {
         return "WeixinPayRequest [device_info=" + device_info + ", nonce_str=" + nonce_str
@@ -250,8 +236,7 @@ public class WeixinPayRequest {
                 + ", total_fee=" + total_fee + ", spbill_create_ip=" + spbill_create_ip
                 + ", time_start=" + time_start + ", time_exipre=" + time_exipre + ", goods_tag="
                 + goods_tag + ", trade_type=" + trade_type + ", limit_pay=" + limit_pay
-                + ", product_id=" + product_id + ", scene_info=" + scene_info + ", transaction_id="
-                + transaction_id + "]";
+                + ", product_id=" + product_id + ", scene_info=" + scene_info + "]";
     }
 
 }
