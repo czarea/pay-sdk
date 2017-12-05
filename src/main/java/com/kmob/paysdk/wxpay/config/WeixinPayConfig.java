@@ -1,6 +1,8 @@
 package com.kmob.paysdk.wxpay.config;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -17,20 +19,79 @@ import com.kmob.paysdk.wxpay.transport.WeixinPayDomainSimpleImpl;
 @Component
 @ConfigurationProperties(prefix = "wxpay")
 public class WeixinPayConfig {
-    private boolean shouldAutoReport =true;
-    private int reportQueueMaxSize = 10000;
-    private String certPath;
+    /**
+     * appId
+     */
     private String appId;
+    /**
+     * 商户号
+     */
     private String mchId;
+    /**
+     * 商户密钥
+     */
     private String key;
+    /**
+     * 证书路径
+     */
+    private String certPath = "E://微信开发//千陌通证书//apiclient_cert.p12";
+
+    /**
+     * 账单下载Gzip文件保存路径
+     */
+    private String billPath = "E://微信开发//";
+
+    /**
+     * 超时时间
+     */
     private long readTimeoutMs = 10000;
-    private long connectTimeoutMs =2000;
-    private String primaryDomain = "api.mch.weixin.qq.com"; 
-    private String alternateDomain ="api2.mch.weixin.qq.com";
-    private int reportWorkerNum =1;
-    private int reportBatchSize =2;
+    /**
+     * 连接超时时间
+     */
+    private long connectTimeoutMs = 2000;
+    /**
+     * 支付通知接收地址
+     */
     private String notifyUrl;
-    
+
+    /**
+     * 是否沙箱环境
+     */
+    private boolean useSandbox;
+    /**
+     * 是否上报请求信息
+     */
+    private boolean shouldAutoReport = false;
+    /**
+     * 上报最大队列
+     */
+    private int reportQueueMaxSize = 10000;
+
+    /**
+     * 主域名
+     */
+    private String primaryDomain = "api.mch.weixin.qq.com";
+    /**
+     * 候补域名
+     */
+    private String alternateDomain = "api2.mch.weixin.qq.com";
+    /**
+     * 
+     */
+    private int reportWorkerNum = 1;
+    /**
+     * 
+     */
+    private int reportBatchSize = 2;
+
+    public boolean isUseSandbox() {
+        return useSandbox;
+    }
+
+    public void setUseSandbox(boolean useSandbox) {
+        this.useSandbox = useSandbox;
+    }
+
     public boolean shouldAutoReport() {
         return true;
     }
@@ -42,12 +103,11 @@ public class WeixinPayConfig {
     private byte[] certData;
 
     private WeixinPayConfig() throws Exception {
-        // String certPath = "D://CERT/common/apiclient_cert.p12";
-        // File file = new File(certPath);
-        // InputStream certStream = new FileInputStream(file);
-        // this.certData = new byte[(int) file.length()];
-        // certStream.read(this.certData);
-        // certStream.close();
+        File file = new File(certPath);
+        InputStream certStream = new FileInputStream(file);
+        this.certData = new byte[(int) file.length()];
+        certStream.read(this.certData);
+        certStream.close();
     }
 
     public String getAppID() {
@@ -113,6 +173,14 @@ public class WeixinPayConfig {
         this.certPath = certPath;
     }
 
+    public String getBillPath() {
+        return billPath;
+    }
+
+    public void setBillPath(String billPath) {
+        this.billPath = billPath;
+    }
+
     public String getAppId() {
         return appId;
     }
@@ -149,10 +217,6 @@ public class WeixinPayConfig {
         return certData;
     }
 
-    public void setCertData(byte[] certData) {
-        this.certData = certData;
-    }
-
     public void setReportQueueMaxSize(int reportQueueMaxSize) {
         this.reportQueueMaxSize = reportQueueMaxSize;
     }
@@ -184,5 +248,5 @@ public class WeixinPayConfig {
     public void setKey(String key) {
         this.key = key;
     }
-    
+
 }

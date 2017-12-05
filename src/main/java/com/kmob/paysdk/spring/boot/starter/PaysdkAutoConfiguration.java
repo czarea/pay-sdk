@@ -12,8 +12,10 @@ import com.kmob.paysdk.alipay.config.AliPayConfig;
 import com.kmob.paysdk.alipay.service.AliPaysdkService;
 import com.kmob.paysdk.alipay.service.impl.AliPaysdkServiceImpl;
 import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
-import com.kmob.paysdk.wxpay.service.WeixinPaysdkService;
-import com.kmob.paysdk.wxpay.service.impl.WeixinPaysdkServiceImpl;
+import com.kmob.paysdk.wxpay.service.WxBillSdkService;
+import com.kmob.paysdk.wxpay.service.WxPaysdkService;
+import com.kmob.paysdk.wxpay.service.impl.WxBillSdkServiceImpl;
+import com.kmob.paysdk.wxpay.service.impl.WxPaysdkServiceImpl;
 
 /**
  * {@link EnableAutoConfiguration Auto-Configuration} for paysdk
@@ -35,9 +37,16 @@ public class PaysdkAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "wxpay", name = "use")
-    public WeixinPaysdkService weixinPayService(WeixinPayConfig weixinPayConfig) throws Exception {
+    @ConditionalOnProperty(prefix = "wxpay", name = "use",havingValue="true")
+    public WxPaysdkService weixinPayService(WeixinPayConfig weixinPayConfig) throws Exception {
         logger.debug("init WeixinPayService successs!");
-        return new WeixinPaysdkServiceImpl(weixinPayConfig);
+        return new WxPaysdkServiceImpl(weixinPayConfig);
+    }
+    
+    @Bean
+    @ConditionalOnProperty(prefix = "wxpay", name = "downbill",havingValue="true")
+    public WxBillSdkService wxBillSdkService(WeixinPayConfig weixinPayConfig) throws Exception {
+        logger.debug("init WxBillSdkService successs!");
+        return new WxBillSdkServiceImpl(weixinPayConfig);
     }
 }

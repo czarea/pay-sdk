@@ -7,7 +7,7 @@ package com.kmob.paysdk.wxpay;
  */
 public class ParameterKeyConstants {
 
-    public static class unifiedOrderRequest {
+    public static class UnifiedOrderRequest {
         /**
          * 终端设备号(门店号或收银设备ID)，默认请传"WEB"
          */

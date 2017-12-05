@@ -25,3 +25,4 @@ wxpay:
   mchId: 1493001312
   key: MIG23A0GE12GSIb3DeQBAQUaa4GNADcA
   notifyUrl: http://120.77.146.227:9090/api/billing/wxpay/payback
+  certPath: E://微信开发//千陌通证书//apiclient_cert.p12

@@ -20,7 +20,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
-import com.kmob.paysdk.util.DefaultThreadFactory;
+import com.kmob.paysdk.parallel.DefaultThreadFactory;
 import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
 
 /**

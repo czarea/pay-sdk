@@ -24,6 +24,9 @@ public class WeixinPayConstants {
     public static final String FIELD_SIGN = "sign";
     public static final String FIELD_SIGN_TYPE = "sign_type";
 
+    
+    public static final String WX_PAY_BASE_URL = "https://api.mch.weixin.qq.com/";
+
     public static final String MICROPAY_URL_SUFFIX     = "/pay/micropay";
     public static final String UNIFIEDORDER_URL_SUFFIX = "/pay/unifiedorder";
     public static final String ORDERQUERY_URL_SUFFIX   = "/pay/orderquery";

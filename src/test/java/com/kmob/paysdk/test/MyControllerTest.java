@@ -16,8 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.kmob.paysdk.wxpay.response.WeixinNotifyResponse;
-import com.kmob.paysdk.wxpay.service.WeixinNotifyHandlerService;
+import com.kmob.paysdk.wxpay.response.WxNotifyResponse;
+import com.kmob.paysdk.wxpay.service.WxNotifyHandlerService;
 
 
 @RunWith(SpringRunner.class)
@@ -29,13 +29,12 @@ public class MyControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private WeixinNotifyHandlerService remoteService;
+    private WxNotifyHandlerService remoteService;
 
 
     @Test
     public void testWeixinPayNotifyTest() throws Exception {
-        // RemoteService has been injected into the reverser bean
-        WeixinNotifyResponse res = new WeixinNotifyResponse();
+        WxNotifyResponse res = new WxNotifyResponse();
         given(this.remoteService.notifyHandler(null)).willReturn(res);
         this.mvc.perform(post("/weixinPay/notify").content("ssssss").accept(MediaType.APPLICATION_ATOM_XML))
                 .andExpect(status().isOk()).andExpect(content().string(""));

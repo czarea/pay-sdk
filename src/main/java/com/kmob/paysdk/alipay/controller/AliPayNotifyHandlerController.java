@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kmob.paysdk.alipay.service.AliPayNotifyHandlerService;
-import com.kmob.paysdk.wxpay.service.WeixinNotifyHandlerService;
+import com.kmob.paysdk.wxpay.service.WxNotifyHandlerService;
 
 
 /**
@@ -29,7 +29,7 @@ import com.kmob.paysdk.wxpay.service.WeixinNotifyHandlerService;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "alipay", name = "useController")
-@ConditionalOnBean(WeixinNotifyHandlerService.class)
+@ConditionalOnBean(WxNotifyHandlerService.class)
 @Controller
 @RequestMapping("/alipay")
 public class AliPayNotifyHandlerController {

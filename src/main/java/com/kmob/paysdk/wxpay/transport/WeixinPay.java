@@ -18,41 +18,22 @@ public class WeixinPay {
     private WeixinPayConfig config;
     private SignType signType;
     private boolean autoReport;
-    private boolean useSandbox;
+    private boolean useSandbox = false;
     private String notifyUrl;
     private WeixinPayTransport wxPayRequest;
 
     public WeixinPay(final WeixinPayConfig config) throws Exception {
-        this(config, null, true, false);
-    }
-
-    public WeixinPay(final WeixinPayConfig config, final boolean autoReport) throws Exception {
-        this(config, null, autoReport, false);
-    }
-
-
-    public WeixinPay(final WeixinPayConfig config, final boolean autoReport,
-            final boolean useSandbox) throws Exception {
-        this(config, null, autoReport, useSandbox);
-    }
-
-    public WeixinPay(final WeixinPayConfig config, final String notifyUrl) throws Exception {
-        this(config, notifyUrl, true, false);
+        this(config, null, false);
+        useSandbox = config.isUseSandbox();
     }
 
     public WeixinPay(final WeixinPayConfig config, final String notifyUrl, final boolean autoReport)
             throws Exception {
-        this(config, notifyUrl, autoReport, false);
-    }
-
-    public WeixinPay(final WeixinPayConfig config, final String notifyUrl, final boolean autoReport,
-            final boolean useSandbox) throws Exception {
         this.config = config;
         // checkWXPayConfig();
         this.notifyUrl = notifyUrl;
-        this.autoReport = autoReport;
-        this.useSandbox = useSandbox;
-        if (useSandbox) {
+        this.autoReport = false;
+        if (config.isUseSandbox()) {
             this.signType = SignType.MD5; // 沙箱环境
         } else {
             this.signType = SignType.HMACSHA256;
@@ -71,12 +52,13 @@ public class WeixinPay {
     public Map<String, String> fillRequestData(Map<String, String> reqData) throws Exception {
         reqData.put("appid", config.getAppID());
         reqData.put("mch_id", config.getMchID());
-        reqData.put("nonce_str", WeixinPayUtil.generateUUID());
+//        reqData.put("nonce_str", WeixinPayUtil.generateUUID());
         if (SignType.MD5.equals(this.signType)) {
             reqData.put("sign_type", WeixinPayConstants.MD5);
         } else if (SignType.HMACSHA256.equals(this.signType)) {
             reqData.put("sign_type", WeixinPayConstants.HMACSHA256);
         }
+        System.out.println(reqData);
         reqData.put("sign",
                 WeixinPayUtil.generateSignature(reqData, config.getKey(), this.signType));
         return reqData;
@@ -326,10 +308,10 @@ public class WeixinPay {
         return this.unifiedOrder(reqData, config.getHttpConnectTimeoutMs(),
                 this.config.getHttpReadTimeoutMs());
     }
-    
-    private Map<String, String> checkData(Map<String, String> reqData){
-        if(StringUtils.isEmpty(reqData.get("body"))) {
-            Map<String, String> error = new HashMap<String,String>();
+
+    private Map<String, String> checkData(Map<String, String> reqData) {
+        if (StringUtils.isEmpty(reqData.get("body"))) {
+            Map<String, String> error = new HashMap<String, String>();
             error.put("msg", "body is null!");
             return error;
         }
@@ -372,7 +354,7 @@ public class WeixinPay {
      * @return API返回数据
      * @throws Exception
      */
-    public Map<String, String> orderQuery(Map<String, String> reqData) throws Exception {
+    public String orderQuery(Map<String, String> reqData) throws Exception {
         return this.orderQuery(reqData, config.getHttpConnectTimeoutMs(),
                 this.config.getHttpReadTimeoutMs());
     }
@@ -388,8 +370,8 @@ public class WeixinPay {
      * @return API返回数据
      * @throws Exception
      */
-    public Map<String, String> orderQuery(Map<String, String> reqData, int connectTimeoutMs,
-            int readTimeoutMs) throws Exception {
+    public String orderQuery(Map<String, String> reqData, int connectTimeoutMs, int readTimeoutMs)
+            throws Exception {
         String url;
         if (this.useSandbox) {
             url = WeixinPayConstants.SANDBOX_ORDERQUERY_URL_SUFFIX;
@@ -398,7 +380,7 @@ public class WeixinPay {
         }
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs);
-        return this.processResponseXml(respXml);
+        return respXml;
     }
 
 
@@ -715,6 +697,54 @@ public class WeixinPay {
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs);
         return this.processResponseXml(respXml);
+    }
+
+    public WeixinPayConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(WeixinPayConfig config) {
+        this.config = config;
+    }
+
+    public SignType getSignType() {
+        return signType;
+    }
+
+    public void setSignType(SignType signType) {
+        this.signType = signType;
+    }
+
+    public boolean isAutoReport() {
+        return autoReport;
+    }
+
+    public void setAutoReport(boolean autoReport) {
+        this.autoReport = autoReport;
+    }
+
+    public boolean isUseSandbox() {
+        return useSandbox;
+    }
+
+    public void setUseSandbox(boolean useSandbox) {
+        this.useSandbox = useSandbox;
+    }
+
+    public String getNotifyUrl() {
+        return notifyUrl;
+    }
+
+    public void setNotifyUrl(String notifyUrl) {
+        this.notifyUrl = notifyUrl;
+    }
+
+    public WeixinPayTransport getWxPayRequest() {
+        return wxPayRequest;
+    }
+
+    public void setWxPayRequest(WeixinPayTransport wxPayRequest) {
+        this.wxPayRequest = wxPayRequest;
     }
 
 }

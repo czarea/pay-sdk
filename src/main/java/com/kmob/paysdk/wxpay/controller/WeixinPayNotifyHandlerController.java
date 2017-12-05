@@ -16,14 +16,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kmob.paysdk.util.MapperUtil;
-import com.kmob.paysdk.wxpay.response.WeixinNotifyResponse;
-import com.kmob.paysdk.wxpay.service.WeixinNotifyHandlerService;
+import com.kmob.paysdk.util.MapUtil;
+import com.kmob.paysdk.wxpay.response.WxNotifyResponse;
+import com.kmob.paysdk.wxpay.service.WxNotifyHandlerService;
 import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
 
 
@@ -34,24 +32,17 @@ import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "wxpay", name = "useController")
-@ConditionalOnBean(WeixinNotifyHandlerService.class)
+@ConditionalOnBean(WxNotifyHandlerService.class)
 @Controller
 @RequestMapping("/weixinPay")
 public class WeixinPayNotifyHandlerController {
     private static final Logger logger =
             LoggerFactory.getLogger(WeixinPayNotifyHandlerController.class);
-    private WeixinNotifyHandlerService weixinNotifyHandlerService;
+    private WxNotifyHandlerService weixinNotifyHandlerService;
 
-    public WeixinPayNotifyHandlerController(WeixinNotifyHandlerService weixinNotifyHandlerService) {
+    public WeixinPayNotifyHandlerController(WxNotifyHandlerService weixinNotifyHandlerService) {
         this.weixinNotifyHandlerService = weixinNotifyHandlerService;
     }
-    
-    @GetMapping("test")
-    @ResponseBody
-    public String res() {
-        return "success";
-    }
-
 
     /**
      * 微信支付通知处理
@@ -77,7 +68,7 @@ public class WeixinPayNotifyHandlerController {
         String result = new String(outSteam.toByteArray(), "utf-8");
         logger.debug("weixin notify request xml data is {}", result);
         if (StringUtils.isEmpty(result)) {
-            writer.write(WeixinNotifyResponse.errorXml());
+            writer.write(WxNotifyResponse.errorXml());
             writer.flush();
             return;
         }
@@ -87,22 +78,22 @@ public class WeixinPayNotifyHandlerController {
             map = WeixinPayUtil.xmlToMap(result);
         } catch (Exception e) {
             logger.error("weixin notify request xml data is {}", result, e);
-            writer.write(WeixinNotifyResponse.errorXml());
+            writer.write(WxNotifyResponse.errorXml());
             writer.flush();
             return;
         }
         try {
-            WeixinNotifyResponse responseNotify = weixinNotifyHandlerService.notifyHandler(map);
+            WxNotifyResponse responseNotify = weixinNotifyHandlerService.notifyHandler(map);
 
             String backToWeixinXml =
-                    WeixinPayUtil.mapToXml(MapperUtil.beanToStringMap(responseNotify));
+                    WeixinPayUtil.mapToXml(MapUtil.beanToStringMap(responseNotify));
             logger.info("weixin payback notify xml is {} ,return to weixin xml is {}", result,
                     backToWeixinXml);
             writer.write(backToWeixinXml);
             writer.flush();
         } catch (Exception e) {
             logger.error("wxpay order notify to xml string error ,the response is {}", result, e);
-            writer.write(WeixinNotifyResponse.errorXml());
+            writer.write(WxNotifyResponse.errorXml());
             writer.flush();
         }
     }
