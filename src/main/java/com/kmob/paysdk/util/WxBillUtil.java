@@ -6,7 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kmob.paysdk.wxpay.constant.WxPayConstants.BillColumnNumber;
+import com.kmob.paysdk.wxpay.constant.WxPayInteractiveConstants.BillColumnNumber;
 import com.kmob.paysdk.wxpay.response.WxAllBillResponse;
 import com.kmob.paysdk.wxpay.response.WxRefundBillResponse;
 import com.kmob.paysdk.wxpay.response.WxSuccessBillResponse;

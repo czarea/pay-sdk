@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.kmob.paysdk.util.MapUtil;
 import com.kmob.paysdk.wxpay.response.WxNotifyResponse;
 import com.kmob.paysdk.wxpay.service.WxNotifyHandlerService;
-import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
+import com.kmob.paysdk.wxpay.transport.WxPayUtil;
 
 
 /**
@@ -35,12 +35,12 @@ import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
 @ConditionalOnBean(WxNotifyHandlerService.class)
 @Controller
 @RequestMapping("/weixinPay")
-public class WeixinPayNotifyHandlerController {
+public class WxPayNotifyHandlerController {
     private static final Logger logger =
-            LoggerFactory.getLogger(WeixinPayNotifyHandlerController.class);
+            LoggerFactory.getLogger(WxPayNotifyHandlerController.class);
     private WxNotifyHandlerService weixinNotifyHandlerService;
 
-    public WeixinPayNotifyHandlerController(WxNotifyHandlerService weixinNotifyHandlerService) {
+    public WxPayNotifyHandlerController(WxNotifyHandlerService weixinNotifyHandlerService) {
         this.weixinNotifyHandlerService = weixinNotifyHandlerService;
     }
 
@@ -75,7 +75,7 @@ public class WeixinPayNotifyHandlerController {
 
         Map<String, String> map = null;
         try {
-            map = WeixinPayUtil.xmlToMap(result);
+            map = WxPayUtil.xmlToMap(result);
         } catch (Exception e) {
             logger.error("weixin notify request xml data is {}", result, e);
             writer.write(WxNotifyResponse.errorXml());
@@ -86,7 +86,7 @@ public class WeixinPayNotifyHandlerController {
             WxNotifyResponse responseNotify = weixinNotifyHandlerService.notifyHandler(map);
 
             String backToWeixinXml =
-                    WeixinPayUtil.mapToXml(MapUtil.beanToStringMap(responseNotify));
+                    WxPayUtil.mapToXml(MapUtil.beanToStringMap(responseNotify));
             logger.info("weixin payback notify xml is {} ,return to weixin xml is {}", result,
                     backToWeixinXml);
             writer.write(backToWeixinXml);

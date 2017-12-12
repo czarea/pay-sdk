@@ -33,7 +33,9 @@ import com.kmob.paysdk.dto.ResultInfo;
 import com.kmob.paysdk.exception.WxPayException;
 import com.kmob.paysdk.util.BeanUtils;
 import com.kmob.paysdk.wxpay.ParameterKeyConstants;
-import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
+import com.kmob.paysdk.wxpay.config.WxPayConfig;
+import com.kmob.paysdk.wxpay.constant.WxPayConstants;
+import com.kmob.paysdk.wxpay.constant.WxPayConstants.SignType;
 import com.kmob.paysdk.wxpay.request.WxPayBaseRequest;
 import com.kmob.paysdk.wxpay.request.WxPayOrderCloseRequest;
 import com.kmob.paysdk.wxpay.request.WxPayOrderQueryRequest;
@@ -50,9 +52,7 @@ import com.kmob.paysdk.wxpay.response.WxPayReverseResponse;
 import com.kmob.paysdk.wxpay.response.WxPayUnifiedOrderResponse;
 import com.kmob.paysdk.wxpay.service.WxNotifyHandlerService;
 import com.kmob.paysdk.wxpay.service.WxPaysdkService;
-import com.kmob.paysdk.wxpay.transport.WeixinPayConstants;
-import com.kmob.paysdk.wxpay.transport.WeixinPayConstants.SignType;
-import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
+import com.kmob.paysdk.wxpay.transport.WxPayUtil;
 
 /**
  * 微信支付sdk服务类
@@ -70,10 +70,10 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
      */
     private final static int UNIFIED_ORDER_ERROR = 300;
 
-    private WeixinPayConfig weixinPayConfig;
+    private WxPayConfig weixinPayConfig;
     private SignType signType;
 
-    public WxPaysdkServiceImpl(WeixinPayConfig weixinPayConfig) throws Exception {
+    public WxPaysdkServiceImpl(WxPayConfig weixinPayConfig) throws Exception {
         this.weixinPayConfig = weixinPayConfig;
         if (weixinPayConfig.isUseSandbox()) {
             this.signType = SignType.MD5; // 沙箱环境
@@ -94,7 +94,7 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
 
         SortedMap<String, String> parameters = new TreeMap<String, String>();
 
-        String timestamp = String.valueOf(WeixinPayUtil.getCurrentTimestamp());
+        String timestamp = String.valueOf(WxPayUtil.getCurrentTimestamp());
         parameters.put(ParameterKeyConstants.appPay.APPID, weixinPayConfig.getAppId());
         parameters.put(ParameterKeyConstants.appPay.PARTNERID, weixinPayConfig.getMchID());
         parameters.put(ParameterKeyConstants.appPay.PREPAYID, response.getPrepayId());
@@ -117,7 +117,7 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
         }
         sb.append("key=" + weixinPayConfig.getKey());
 
-        String sign = WeixinPayUtil.HMACSHA256(sb.toString(), weixinPayConfig.getKey());
+        String sign = WxPayUtil.HMACSHA256(sb.toString(), weixinPayConfig.getKey());
         parameters.put(ParameterKeyConstants.appPay.SIGN, sign);
         result.setData(parameters);
         return result;
@@ -135,9 +135,9 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
         String requestStr = request.toXML();
         String url;
         if (weixinPayConfig.isUseSandbox()) {
-            url = WeixinPayConstants.SANDBOX_UNIFIEDORDER_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_UNIFIEDORDER_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.UNIFIEDORDER_URL_SUFFIX;
+            url = WxPayConstants.UNIFIEDORDER_URL_SUFFIX;
         }
         String response = this.post(url, requestStr, false);
 
@@ -150,9 +150,9 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
         WxPayOrderQueryRequest request = new WxPayOrderQueryRequest();
         String url;
         if (weixinPayConfig.isUseSandbox()) {
-            url = WeixinPayConstants.SANDBOX_ORDERQUERY_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_ORDERQUERY_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.ORDERQUERY_URL_SUFFIX;
+            url = WxPayConstants.ORDERQUERY_URL_SUFFIX;
         }
         if (!StringUtils.isEmpty(transactionId)) {
             request.setTransactionId(transactionId);
@@ -182,9 +182,9 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
         fillRequestData(request);
         String url;
         if (weixinPayConfig.isUseSandbox()) {
-            url = WeixinPayConstants.SANDBOX_CLOSEORDER_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_CLOSEORDER_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.CLOSEORDER_URL_SUFFIX;
+            url = WxPayConstants.CLOSEORDER_URL_SUFFIX;
         }
         String responseContent = this.post(url, request.toXML(), false);
         WxPayOrderCloseResponse result =
@@ -198,9 +198,9 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
         WxPayOrderReverseRequest request = new WxPayOrderReverseRequest();
         String url;
         if (weixinPayConfig.isUseSandbox()) {
-            url = WeixinPayConstants.SANDBOX_REVERSE_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_REVERSE_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.REVERSE_URL_SUFFIX;
+            url = WxPayConstants.REVERSE_URL_SUFFIX;
         }
         if (!StringUtils.isEmpty(transactionId)) {
             request.setTransactionId(transactionId);
@@ -228,9 +228,9 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
     public WxPayRefundResponse refund(WxPayRefundRequest request) throws Exception {
         String url;
         if (weixinPayConfig.isUseSandbox()) {
-            url = WeixinPayConstants.SANDBOX_REFUND_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_REFUND_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.REFUND_URL_SUFFIX;
+            url = WxPayConstants.REFUND_URL_SUFFIX;
         }
         fillRequestData(request);
         fillRequestData(request);
@@ -244,9 +244,9 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
     public WxPayRefundQueryResponse refundQuery(WxPayRefundQueryRequest request) throws Exception {
         String url;
         if (weixinPayConfig.isUseSandbox()) {
-            url = WeixinPayConstants.SANDBOX_REFUND_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_REFUND_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.REFUNDQUERY_URL_SUFFIX;
+            url = WxPayConstants.REFUNDQUERY_URL_SUFFIX;
         }
         fillRequestData(request);
         String requestStr = request.toXML();
@@ -275,7 +275,7 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
             throw new Exception("weixin notify request parameter is empty!");
         }
 
-        Map<String, String> notifyRequestData = WeixinPayUtil.xmlToMap(result);
+        Map<String, String> notifyRequestData = WxPayUtil.xmlToMap(result);
 
 
         WxNotifyResponse notifyResponse = notifyService.notifyHandler(notifyRequestData);
@@ -286,15 +286,15 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
     private void fillRequestData(WxPayBaseRequest request) throws Exception {
         request.setAppid(weixinPayConfig.getAppID());
         request.setMchId(weixinPayConfig.getMchID());
-        request.setNonceStr(WeixinPayUtil.generateUUID());
+        request.setNonceStr(WxPayUtil.generateUUID());
         if (weixinPayConfig.isUseSandbox()) {
-            request.setSignType(WeixinPayConstants.MD5);
+            request.setSignType(WxPayConstants.MD5);
         } else {
-            request.setSignType(WeixinPayConstants.HMACSHA256);
+            request.setSignType(WxPayConstants.HMACSHA256);
         }
         Map<String, String> reqData = BeanUtils.xmlBean2Map(request);
         System.out.println(reqData);
-        String sign = WeixinPayUtil.generateSignature(reqData, weixinPayConfig.getKey(), signType);
+        String sign = WxPayUtil.generateSignature(reqData, weixinPayConfig.getKey(), signType);
         request.checkFields();
         request.setSign(sign);
     }
@@ -310,7 +310,7 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
                         new String[] {"TLSv1"}, null, new DefaultHostnameVerifier());
                 httpClientBuilder.setSSLSocketFactory(sslsf);
             }
-            url = WeixinPayConstants.WX_PAY_BASE_URL + url;
+            url = WxPayConstants.WX_PAY_BASE_URL + url;
             HttpPost httpPost = new HttpPost(url);
 
             httpPost.setConfig(RequestConfig.custom()

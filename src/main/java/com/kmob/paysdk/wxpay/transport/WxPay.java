@@ -5,29 +5,30 @@ import java.util.Map;
 
 import org.springframework.util.StringUtils;
 
-import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
-import com.kmob.paysdk.wxpay.transport.WeixinPayConstants.SignType;
+import com.kmob.paysdk.wxpay.config.WxPayConfig;
+import com.kmob.paysdk.wxpay.constant.WxPayConstants;
+import com.kmob.paysdk.wxpay.constant.WxPayConstants.SignType;
 
 /**
  * 微信支付类
  *
  * @author verne
  */
-public class WeixinPay {
+public class WxPay {
 
-    private WeixinPayConfig config;
+    private WxPayConfig config;
     private SignType signType;
     private boolean autoReport;
     private boolean useSandbox = false;
     private String notifyUrl;
-    private WeixinPayTransport wxPayRequest;
+    private WxPayTransport wxPayRequest;
 
-    public WeixinPay(final WeixinPayConfig config) throws Exception {
+    public WxPay(final WxPayConfig config) throws Exception {
         this(config, null, false);
         useSandbox = config.isUseSandbox();
     }
 
-    public WeixinPay(final WeixinPayConfig config, final String notifyUrl, final boolean autoReport)
+    public WxPay(final WxPayConfig config, final String notifyUrl, final boolean autoReport)
             throws Exception {
         this.config = config;
         // checkWXPayConfig();
@@ -38,7 +39,7 @@ public class WeixinPay {
         } else {
             this.signType = SignType.HMACSHA256;
         }
-        this.wxPayRequest = new WeixinPayTransport(config);
+        this.wxPayRequest = new WxPayTransport(config);
     }
 
     /**
@@ -54,13 +55,13 @@ public class WeixinPay {
         reqData.put("mch_id", config.getMchID());
 //        reqData.put("nonce_str", WeixinPayUtil.generateUUID());
         if (SignType.MD5.equals(this.signType)) {
-            reqData.put("sign_type", WeixinPayConstants.MD5);
+            reqData.put("sign_type", WxPayConstants.MD5);
         } else if (SignType.HMACSHA256.equals(this.signType)) {
-            reqData.put("sign_type", WeixinPayConstants.HMACSHA256);
+            reqData.put("sign_type", WxPayConstants.HMACSHA256);
         }
         System.out.println(reqData);
         reqData.put("sign",
-                WeixinPayUtil.generateSignature(reqData, config.getKey(), this.signType));
+                WxPayUtil.generateSignature(reqData, config.getKey(), this.signType));
         return reqData;
     }
 
@@ -73,7 +74,7 @@ public class WeixinPay {
      */
     public boolean isResponseSignatureValid(Map<String, String> reqData) throws Exception {
         // 返回数据的签名方式和请求中给定的签名方式是一致的
-        return WeixinPayUtil.isSignatureValid(reqData, this.config.getKey(), this.signType);
+        return WxPayUtil.isSignatureValid(reqData, this.config.getKey(), this.signType);
     }
 
     /**
@@ -84,7 +85,7 @@ public class WeixinPay {
      * @throws Exception
      */
     public boolean isPayResultNotifySignatureValid(Map<String, String> reqData) throws Exception {
-        String signTypeInData = reqData.get(WeixinPayConstants.FIELD_SIGN_TYPE);
+        String signTypeInData = reqData.get(WxPayConstants.FIELD_SIGN_TYPE);
         SignType signType;
         if (signTypeInData == null) {
             signType = SignType.MD5;
@@ -92,15 +93,15 @@ public class WeixinPay {
             signTypeInData = signTypeInData.trim();
             if (signTypeInData.length() == 0) {
                 signType = SignType.MD5;
-            } else if (WeixinPayConstants.MD5.equals(signTypeInData)) {
+            } else if (WxPayConstants.MD5.equals(signTypeInData)) {
                 signType = SignType.MD5;
-            } else if (WeixinPayConstants.HMACSHA256.equals(signTypeInData)) {
+            } else if (WxPayConstants.HMACSHA256.equals(signTypeInData)) {
                 signType = SignType.HMACSHA256;
             } else {
                 throw new Exception(String.format("Unsupported sign_type: %s", signTypeInData));
             }
         }
-        return WeixinPayUtil.isSignatureValid(reqData, this.config.getKey(), signType);
+        return WxPayUtil.isSignatureValid(reqData, this.config.getKey(), signType);
     }
 
 
@@ -117,7 +118,7 @@ public class WeixinPay {
     public String requestWithoutCert(String urlSuffix, Map<String, String> reqData,
             int connectTimeoutMs, int readTimeoutMs) throws Exception {
         String msgUUID = reqData.get("nonce_str");
-        String reqBody = WeixinPayUtil.mapToXml(reqData);
+        String reqBody = WxPayUtil.mapToXml(reqData);
 
         String resp = this.wxPayRequest.requestWithoutCert(urlSuffix, msgUUID, reqBody,
                 connectTimeoutMs, readTimeoutMs, autoReport);
@@ -138,7 +139,7 @@ public class WeixinPay {
     public String requestWithCert(String urlSuffix, Map<String, String> reqData,
             int connectTimeoutMs, int readTimeoutMs) throws Exception {
         String msgUUID = reqData.get("nonce_str");
-        String reqBody = WeixinPayUtil.mapToXml(reqData);
+        String reqBody = WxPayUtil.mapToXml(reqData);
 
         String resp = this.wxPayRequest.requestWithCert(urlSuffix, msgUUID, reqBody,
                 connectTimeoutMs, readTimeoutMs, this.autoReport);
@@ -155,16 +156,16 @@ public class WeixinPay {
     public Map<String, String> processResponseXml(String xmlStr) throws Exception {
         String RETURN_CODE = "return_code";
         String return_code;
-        Map<String, String> respData = WeixinPayUtil.xmlToMap(xmlStr);
+        Map<String, String> respData = WxPayUtil.xmlToMap(xmlStr);
         if (respData.containsKey(RETURN_CODE)) {
             return_code = respData.get(RETURN_CODE);
         } else {
             throw new Exception(String.format("No `return_code` in XML: %s", xmlStr));
         }
 
-        if (return_code.equals(WeixinPayConstants.FAIL)) {
+        if (return_code.equals(WxPayConstants.FAIL)) {
             return respData;
-        } else if (return_code.equals(WeixinPayConstants.SUCCESS)) {
+        } else if (return_code.equals(WxPayConstants.SUCCESS)) {
             if (this.isResponseSignatureValid(respData)) {
                 return respData;
             } else {
@@ -204,9 +205,9 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_MICROPAY_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_MICROPAY_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.MICROPAY_URL_SUFFIX;
+            url = WxPayConstants.MICROPAY_URL_SUFFIX;
         }
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs);
@@ -240,7 +241,7 @@ public class WeixinPay {
         Exception lastException = null;
 
         while (true) {
-            startTimestampMs = WeixinPayUtil.getCurrentTimestampMs();
+            startTimestampMs = WxPayUtil.getCurrentTimestampMs();
             int readTimeoutMs = remainingTimeMs - connectTimeoutMs;
             if (readTimeoutMs > 1000) {
                 try {
@@ -256,12 +257,12 @@ public class WeixinPay {
                             if (errCode.equals("SYSTEMERROR") || errCode.equals("BANKERROR")
                                     || errCode.equals("USERPAYING")) {
                                 remainingTimeMs = remainingTimeMs
-                                        - (int) (WeixinPayUtil.getCurrentTimestampMs()
+                                        - (int) (WxPayUtil.getCurrentTimestampMs()
                                                 - startTimestampMs);
                                 if (remainingTimeMs <= 100) {
                                     break;
                                 } else {
-                                    WeixinPayUtil.getLogger()
+                                    WxPayUtil.getLogger()
                                             .info("microPayWithPos: try micropay again");
                                     if (remainingTimeMs > 5 * 1000) {
                                         Thread.sleep(5 * 1000);
@@ -333,9 +334,9 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_UNIFIEDORDER_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_UNIFIEDORDER_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.UNIFIEDORDER_URL_SUFFIX;
+            url = WxPayConstants.UNIFIEDORDER_URL_SUFFIX;
         }
         if (this.notifyUrl != null) {
             reqData.put("notify_url", this.notifyUrl);
@@ -374,9 +375,9 @@ public class WeixinPay {
             throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_ORDERQUERY_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_ORDERQUERY_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.ORDERQUERY_URL_SUFFIX;
+            url = WxPayConstants.ORDERQUERY_URL_SUFFIX;
         }
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs);
@@ -413,9 +414,9 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_REVERSE_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_REVERSE_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.REVERSE_URL_SUFFIX;
+            url = WxPayConstants.REVERSE_URL_SUFFIX;
         }
         String respXml = this.requestWithCert(url, this.fillRequestData(reqData), connectTimeoutMs,
                 readTimeoutMs);
@@ -451,9 +452,9 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_CLOSEORDER_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_CLOSEORDER_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.CLOSEORDER_URL_SUFFIX;
+            url = WxPayConstants.CLOSEORDER_URL_SUFFIX;
         }
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs);
@@ -490,9 +491,9 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_REFUND_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_REFUND_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.REFUND_URL_SUFFIX;
+            url = WxPayConstants.REFUND_URL_SUFFIX;
         }
         String respXml = this.requestWithCert(url, this.fillRequestData(reqData), connectTimeoutMs,
                 readTimeoutMs);
@@ -528,9 +529,9 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_REFUNDQUERY_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_REFUNDQUERY_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.REFUNDQUERY_URL_SUFFIX;
+            url = WxPayConstants.REFUNDQUERY_URL_SUFFIX;
         }
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs);
@@ -567,20 +568,20 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_DOWNLOADBILL_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_DOWNLOADBILL_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.DOWNLOADBILL_URL_SUFFIX;
+            url = WxPayConstants.DOWNLOADBILL_URL_SUFFIX;
         }
         String respStr = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs).trim();
         Map<String, String> ret;
         // 出现错误，返回XML数据
         if (respStr.indexOf("<") == 0) {
-            ret = WeixinPayUtil.xmlToMap(respStr);
+            ret = WxPayUtil.xmlToMap(respStr);
         } else {
             // 正常返回csv数据
             ret = new HashMap<String, String>();
-            ret.put("return_code", WeixinPayConstants.SUCCESS);
+            ret.put("return_code", WxPayConstants.SUCCESS);
             ret.put("return_msg", "ok");
             ret.put("data", respStr);
         }
@@ -616,13 +617,13 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_REPORT_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_REPORT_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.REPORT_URL_SUFFIX;
+            url = WxPayConstants.REPORT_URL_SUFFIX;
         }
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs);
-        return WeixinPayUtil.xmlToMap(respXml);
+        return WxPayUtil.xmlToMap(respXml);
     }
 
 
@@ -652,9 +653,9 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_SHORTURL_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_SHORTURL_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.SHORTURL_URL_SUFFIX;
+            url = WxPayConstants.SHORTURL_URL_SUFFIX;
         }
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs);
@@ -690,20 +691,20 @@ public class WeixinPay {
             int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
-            url = WeixinPayConstants.SANDBOX_AUTHCODETOOPENID_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_AUTHCODETOOPENID_URL_SUFFIX;
         } else {
-            url = WeixinPayConstants.AUTHCODETOOPENID_URL_SUFFIX;
+            url = WxPayConstants.AUTHCODETOOPENID_URL_SUFFIX;
         }
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData),
                 connectTimeoutMs, readTimeoutMs);
         return this.processResponseXml(respXml);
     }
 
-    public WeixinPayConfig getConfig() {
+    public WxPayConfig getConfig() {
         return config;
     }
 
-    public void setConfig(WeixinPayConfig config) {
+    public void setConfig(WxPayConfig config) {
         this.config = config;
     }
 
@@ -739,11 +740,11 @@ public class WeixinPay {
         this.notifyUrl = notifyUrl;
     }
 
-    public WeixinPayTransport getWxPayRequest() {
+    public WxPayTransport getWxPayRequest() {
         return wxPayRequest;
     }
 
-    public void setWxPayRequest(WeixinPayTransport wxPayRequest) {
+    public void setWxPayRequest(WxPayTransport wxPayRequest) {
         this.wxPayRequest = wxPayRequest;
     }
 

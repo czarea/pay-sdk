@@ -50,7 +50,7 @@ public class SignUtils {
      * @param ignoreSignType 签名时，是否忽略signType
      * @return 签名字符串
      */
-    public static String createSign(Map<String, String> params, String signType, String signKey,
+    public static String createSign(Map<String, String> params, SignType signType, String signKey,
             boolean ignoreSignType) {
         SortedMap<String, String> sortedMap = new TreeMap<>(params);
 
@@ -72,7 +72,7 @@ public class SignUtils {
         }
 
         toSign.append("key=").append(signKey);
-        if (SignType.HMAC_SHA256.equals(signType)) {
+        if (SignType.HMACSHA256.equals(signType)) {
             return createHmacSha256Sign(toSign.toString(), signKey);
         } else {
             return DigestUtils.md5Hex(toSign.toString()).toUpperCase();

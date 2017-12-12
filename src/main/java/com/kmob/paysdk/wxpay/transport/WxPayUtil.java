@@ -25,11 +25,12 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.kmob.paysdk.wxpay.transport.WeixinPayConstants.SignType;
+import com.kmob.paysdk.wxpay.constant.WxPayConstants;
+import com.kmob.paysdk.wxpay.constant.WxPayConstants.SignType;
 
 
-public class WeixinPayUtil {
-    private static final Logger logger = LoggerFactory.getLogger(WeixinPayUtil.class);
+public class WxPayUtil {
+    private static final Logger logger = LoggerFactory.getLogger(WxPayUtil.class);
 
     /**
      * XML格式字符串转换为Map
@@ -133,7 +134,7 @@ public class WeixinPayUtil {
     public static String generateSignedXml(final Map<String, String> data, String key,
             SignType signType) throws Exception {
         String sign = generateSignature(data, key, signType);
-        data.put(WeixinPayConstants.FIELD_SIGN, sign);
+        data.put(WxPayConstants.FIELD_SIGN, sign);
         return mapToXml(data);
     }
 
@@ -148,10 +149,10 @@ public class WeixinPayUtil {
      */
     public static boolean isSignatureValid(String xmlStr, String key) throws Exception {
         Map<String, String> data = xmlToMap(xmlStr);
-        if (!data.containsKey(WeixinPayConstants.FIELD_SIGN)) {
+        if (!data.containsKey(WxPayConstants.FIELD_SIGN)) {
             return false;
         }
-        String sign = data.get(WeixinPayConstants.FIELD_SIGN);
+        String sign = data.get(WxPayConstants.FIELD_SIGN);
         return generateSignature(data, key).equals(sign);
     }
 
@@ -178,10 +179,10 @@ public class WeixinPayUtil {
      */
     public static boolean isSignatureValid(Map<String, String> data, String key, SignType signType)
             throws Exception {
-        if (!data.containsKey(WeixinPayConstants.FIELD_SIGN)) {
+        if (!data.containsKey(WxPayConstants.FIELD_SIGN)) {
             return false;
         }
-        String sign = data.get(WeixinPayConstants.FIELD_SIGN);
+        String sign = data.get(WxPayConstants.FIELD_SIGN);
         return generateSignature(data, key, signType).equals(sign);
     }
 
@@ -212,7 +213,7 @@ public class WeixinPayUtil {
         Arrays.sort(keyArray);
         StringBuilder sb = new StringBuilder();
         for (String k : keyArray) {
-            if (k.equals(WeixinPayConstants.FIELD_SIGN)) {
+            if (k.equals(WxPayConstants.FIELD_SIGN)) {
                 continue;
             }
             // 参数值为空，则不参与签名

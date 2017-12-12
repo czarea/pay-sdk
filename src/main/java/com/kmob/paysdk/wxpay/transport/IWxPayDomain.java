@@ -1,13 +1,13 @@
 package com.kmob.paysdk.wxpay.transport;
 
-import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
+import com.kmob.paysdk.wxpay.config.WxPayConfig;
 
 /**
  * 域名管理，实现主备域名自动切换
  * 
  * @author verne
  */
-public abstract interface IWeixinPayDomain {
+public abstract interface IWxPayDomain {
     /**
      * 上报域名网络状况
      * 
@@ -24,7 +24,7 @@ public abstract interface IWeixinPayDomain {
      * @param config 配置
      * @return 域名
      */
-    abstract DomainInfo getDomain(final WeixinPayConfig config);
+    abstract DomainInfo getDomain(final WxPayConfig config);
 
     static class DomainInfo {
         /**

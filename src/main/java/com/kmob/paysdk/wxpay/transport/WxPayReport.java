@@ -21,14 +21,14 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
 import com.kmob.paysdk.parallel.DefaultThreadFactory;
-import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
+import com.kmob.paysdk.wxpay.config.WxPayConfig;
 
 /**
  * 交易保障
  * 
  * @author verne
  */
-public class WeixinPayReport {
+public class WxPayReport {
 
     public static class ReportInfo {
 
@@ -95,7 +95,7 @@ public class WeixinPayReport {
                 sb.append(obj).append(separator);
             }
             try {
-                String sign = WeixinPayUtil.HMACSHA256(sb.toString(), key);
+                String sign = WxPayUtil.HMACSHA256(sb.toString(), key);
                 sb.append(sign);
                 return sb.toString();
             } catch (Exception ex) {
@@ -114,15 +114,15 @@ public class WeixinPayReport {
     private static final int DEFAULT_READ_TIMEOUT_MS = 8 * 1000;
 
     private LinkedBlockingQueue<String> reportMsgQueue = null;
-    private WeixinPayConfig config;
+    private WxPayConfig config;
     private ExecutorService executorService;
     
     private static final int CORE_POOL_SIZE = 2;
     private static final int MAXIMUM_POOL_SIZE = 10;
 
-    private volatile static WeixinPayReport INSTANCE;
+    private volatile static WxPayReport INSTANCE;
 
-    private WeixinPayReport(final WeixinPayConfig config) {
+    private WxPayReport(final WxPayConfig config) {
         this.config = config;
         reportMsgQueue = new LinkedBlockingQueue<String>(config.getReportQueueMaxSize());
 
@@ -132,7 +132,7 @@ public class WeixinPayReport {
             new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory , new ThreadPoolExecutor.AbortPolicy());
 
         if (config.shouldAutoReport()) {
-            WeixinPayUtil.getLogger().info("report worker num: {}", config.getReportWorkerNum());
+            WxPayUtil.getLogger().info("report worker num: {}", config.getReportWorkerNum());
             for (int i = 0; i < config.getReportWorkerNum(); ++i) {
                 executorService.execute(new Runnable() {
                     @Override
@@ -142,15 +142,15 @@ public class WeixinPayReport {
                             try {
                                 StringBuffer sb = new StringBuffer();
                                 String firstMsg = reportMsgQueue.take();
-                                WeixinPayUtil.getLogger().info("get first report msg: {}", firstMsg);
+                                WxPayUtil.getLogger().info("get first report msg: {}", firstMsg);
                                 String msg = null;
                                 sb.append(firstMsg); // 会阻塞至有消息
                                 int remainNum = config.getReportBatchSize() - 1;
                                 for (int j = 0; j < remainNum; ++j) {
-                                    WeixinPayUtil.getLogger().info("try get remain report msg");
+                                    WxPayUtil.getLogger().info("try get remain report msg");
                                     // msg = reportMsgQueue.poll(); // 不阻塞了
                                     msg = reportMsgQueue.take();
-                                    WeixinPayUtil.getLogger().info("get remain report msg: {}", msg);
+                                    WxPayUtil.getLogger().info("get remain report msg: {}", msg);
                                     if (msg == null) {
                                         break;
                                     } else {
@@ -159,10 +159,10 @@ public class WeixinPayReport {
                                     }
                                 }
                                 // 上报
-                                WeixinPayReport.httpRequest(sb.toString(), DEFAULT_CONNECT_TIMEOUT_MS,
+                                WxPayReport.httpRequest(sb.toString(), DEFAULT_CONNECT_TIMEOUT_MS,
                                         DEFAULT_READ_TIMEOUT_MS);
                             } catch (Exception ex) {
-                                WeixinPayUtil.getLogger().warn("report fail. reason: {}",
+                                WxPayUtil.getLogger().warn("report fail. reason: {}",
                                         ex.getMessage());
                             }
                         }
@@ -179,11 +179,11 @@ public class WeixinPayReport {
      * @param config
      * @return
      */
-    public static WeixinPayReport getInstance(WeixinPayConfig config) {
+    public static WxPayReport getInstance(WxPayConfig config) {
         if (INSTANCE == null) {
-            synchronized (WeixinPayReport.class) {
+            synchronized (WxPayReport.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new WeixinPayReport(config);
+                    INSTANCE = new WxPayReport(config);
                 }
             }
         }
@@ -193,12 +193,12 @@ public class WeixinPayReport {
     public void report(String uuid, long elapsedTimeMillis, String firstDomain,
             boolean primaryDomain, int firstConnectTimeoutMillis, int firstReadTimeoutMillis,
             boolean firstHasDnsError, boolean firstHasConnectTimeout, boolean firstHasReadTimeout) {
-        long currentTimestamp = WeixinPayUtil.getCurrentTimestamp();
+        long currentTimestamp = WxPayUtil.getCurrentTimestamp();
         ReportInfo reportInfo = new ReportInfo(uuid, currentTimestamp, elapsedTimeMillis,
                 firstDomain, primaryDomain, firstConnectTimeoutMillis, firstReadTimeoutMillis,
                 firstHasDnsError, firstHasConnectTimeout, firstHasReadTimeout);
         String data = reportInfo.toLineString(config.getKey());
-        WeixinPayUtil.getLogger().info("report {}", data);
+        WxPayUtil.getLogger().info("report {}", data);
         if (data != null) {
             reportMsgQueue.offer(data);
         }

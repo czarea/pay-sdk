@@ -8,8 +8,8 @@ import java.io.InputStream;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import com.kmob.paysdk.wxpay.transport.IWeixinPayDomain;
-import com.kmob.paysdk.wxpay.transport.WeixinPayDomainSimpleImpl;
+import com.kmob.paysdk.wxpay.transport.IWxPayDomain;
+import com.kmob.paysdk.wxpay.transport.WxPayDomainSimpleImpl;
 
 /**
  * 微信支付配置
@@ -18,7 +18,7 @@ import com.kmob.paysdk.wxpay.transport.WeixinPayDomainSimpleImpl;
  */
 @Component
 @ConfigurationProperties(prefix = "wxpay")
-public class WeixinPayConfig {
+public class WxPayConfig {
     /**
      * appId
      */
@@ -102,7 +102,7 @@ public class WeixinPayConfig {
 
     private byte[] certData;
 
-    private WeixinPayConfig() throws Exception {
+    private WxPayConfig() throws Exception {
         File file = new File(certPath);
         InputStream certStream = new FileInputStream(file);
         this.certData = new byte[(int) file.length()];
@@ -137,8 +137,8 @@ public class WeixinPayConfig {
         return 10000;
     }
 
-    public IWeixinPayDomain getWXPayDomain() {
-        return WeixinPayDomainSimpleImpl.instance();
+    public IWxPayDomain getWXPayDomain() {
+        return WxPayDomainSimpleImpl.instance();
     }
 
     public String getPrimaryDomain() {

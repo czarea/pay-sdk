@@ -25,7 +25,9 @@ import org.slf4j.LoggerFactory;
 import com.kmob.paysdk.exception.WxPayException;
 import com.kmob.paysdk.util.BeanUtils;
 import com.kmob.paysdk.util.WxBillUtil;
-import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
+import com.kmob.paysdk.wxpay.config.WxPayConfig;
+import com.kmob.paysdk.wxpay.constant.WxPayConstants;
+import com.kmob.paysdk.wxpay.constant.WxPayConstants.SignType;
 import com.kmob.paysdk.wxpay.request.WxPayBaseRequest;
 import com.kmob.paysdk.wxpay.request.WxPayDownloadBillRequest;
 import com.kmob.paysdk.wxpay.response.WxAllBillResponse;
@@ -33,25 +35,23 @@ import com.kmob.paysdk.wxpay.response.WxPayBillBaseResponse;
 import com.kmob.paysdk.wxpay.response.WxRefundBillResponse;
 import com.kmob.paysdk.wxpay.response.WxSuccessBillResponse;
 import com.kmob.paysdk.wxpay.service.WxBillSdkService;
-import com.kmob.paysdk.wxpay.transport.WeixinPayConstants;
-import com.kmob.paysdk.wxpay.transport.WeixinPayConstants.SignType;
-import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
+import com.kmob.paysdk.wxpay.transport.WxPayUtil;
 
 public class WxBillSdkServiceImpl implements WxBillSdkService {
     private static final Logger logger = LoggerFactory.getLogger(WxBillSdkServiceImpl.class);
 
-    private WeixinPayConfig weixinPayConfig;
+    private WxPayConfig weixinPayConfig;
     private SignType signType;
     private String url;
 
-    public WxBillSdkServiceImpl(WeixinPayConfig weixinPayConfig) {
+    public WxBillSdkServiceImpl(WxPayConfig weixinPayConfig) {
         this.weixinPayConfig = weixinPayConfig;
         if (weixinPayConfig.isUseSandbox()) {
             this.signType = SignType.MD5; // 沙箱环境
-            url = WeixinPayConstants.SANDBOX_DOWNLOADBILL_URL_SUFFIX;
+            url = WxPayConstants.SANDBOX_DOWNLOADBILL_URL_SUFFIX;
         } else {
             this.signType = SignType.HMACSHA256;
-            url = WeixinPayConstants.DOWNLOADBILL_URL_SUFFIX;
+            url = WxPayConstants.DOWNLOADBILL_URL_SUFFIX;
         }
     }
 
@@ -106,7 +106,7 @@ public class WxBillSdkServiceImpl implements WxBillSdkService {
     protected String post(String url, String requestStr, boolean gzip) throws WxPayException {
         try {
             HttpClientBuilder httpClientBuilder = HttpClients.custom();
-            url = WeixinPayConstants.WX_PAY_BASE_URL + url;
+            url = WxPayConstants.WX_PAY_BASE_URL + url;
             HttpPost httpPost = new HttpPost(url);
 
             httpPost.setConfig(RequestConfig.custom()
@@ -138,7 +138,7 @@ public class WxBillSdkServiceImpl implements WxBillSdkService {
                     // TODO 有可能会重复
                     SimpleDateFormat allTime = new SimpleDateFormat("yyyyMMddHHmmss");
                     String fileName = weixinPayConfig.getBillPath() + allTime.format(new Date())
-                            + WeixinPayUtil.generateNonceStr() + ".gzip";
+                            + WxPayUtil.generateNonceStr() + ".gzip";
                     Files.copy(httpEntity.getContent(), Paths.get(fileName),
                             StandardCopyOption.REPLACE_EXISTING);
                     return fileName;
@@ -155,15 +155,15 @@ public class WxBillSdkServiceImpl implements WxBillSdkService {
     private void fillRequestData(WxPayBaseRequest request) throws Exception {
         request.setAppid(weixinPayConfig.getAppID());
         request.setMchId(weixinPayConfig.getMchID());
-        request.setNonceStr(WeixinPayUtil.generateUUID());
+        request.setNonceStr(WxPayUtil.generateUUID());
         if (weixinPayConfig.isUseSandbox()) {
-            request.setSignType(WeixinPayConstants.MD5);
+            request.setSignType(WxPayConstants.MD5);
         } else {
-            request.setSignType(WeixinPayConstants.HMACSHA256);
+            request.setSignType(WxPayConstants.HMACSHA256);
         }
         Map<String, String> reqData = BeanUtils.xmlBean2Map(request);
         System.out.println(reqData);
-        String sign = WeixinPayUtil.generateSignature(reqData, weixinPayConfig.getKey(), signType);
+        String sign = WxPayUtil.generateSignature(reqData, weixinPayConfig.getKey(), signType);
         request.checkFields();
         request.setSign(sign);
     }

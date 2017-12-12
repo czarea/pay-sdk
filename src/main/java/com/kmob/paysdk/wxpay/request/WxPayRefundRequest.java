@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.kmob.paysdk.annotation.Required;
 import com.kmob.paysdk.exception.WxPayException;
-import com.kmob.paysdk.wxpay.constant.WxPayConstants.RefundAccountSource;
+import com.kmob.paysdk.wxpay.constant.WxPayInteractiveConstants.RefundAccountSource;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import lombok.AllArgsConstructor;

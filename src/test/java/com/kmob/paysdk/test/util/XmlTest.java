@@ -15,7 +15,7 @@ import com.kmob.paysdk.parallel.DefaultThreadFactory;
 import com.kmob.paysdk.util.MapUtil;
 import com.kmob.paysdk.util.xml.XStreamInitializer;
 import com.kmob.paysdk.wxpay.response.WxSuccessBillResponse;
-import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
+import com.kmob.paysdk.wxpay.transport.WxPayUtil;
 import com.thoughtworks.xstream.XStream;
 
 public class XmlTest {
@@ -41,7 +41,7 @@ public class XmlTest {
                     res.setTotalFee("100");
                     String xml;
                     try {
-                        xml = WeixinPayUtil.mapToXml(MapUtil.beanToStringMap(res));
+                        xml = WxPayUtil.mapToXml(MapUtil.beanToStringMap(res));
                         System.out.println(xml);
                     } catch (Exception e) {
                         // TODO Auto-generated catch block

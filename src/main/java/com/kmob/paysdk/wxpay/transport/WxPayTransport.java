@@ -33,14 +33,14 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kmob.paysdk.wxpay.config.WeixinPayConfig;
+import com.kmob.paysdk.wxpay.config.WxPayConfig;
 
-public class WeixinPayTransport {
-    private static final Logger logger = LoggerFactory.getLogger(WeixinPayTransport.class);
+public class WxPayTransport {
+    private static final Logger logger = LoggerFactory.getLogger(WxPayTransport.class);
 
-    private WeixinPayConfig config;
+    private WxPayConfig config;
 
-    public WeixinPayTransport(WeixinPayConfig config) throws Exception {
+    public WxPayTransport(WxPayConfig config) throws Exception {
 
         this.config = config;
     }
@@ -134,7 +134,7 @@ public class WeixinPayTransport {
             //TODO 有可能会重复
             SimpleDateFormat allTime = new SimpleDateFormat("yyyyMMddHHmmss");
 
-            String fileName = config.getBillPath() + allTime.format(new Date()) + WeixinPayUtil.generateNonceStr()+ ".gzip";
+            String fileName = config.getBillPath() + allTime.format(new Date()) + WxPayUtil.generateNonceStr()+ ".gzip";
             Files.copy(httpEntity.getContent(), Paths.get(fileName),
                     StandardCopyOption.REPLACE_EXISTING);
             return "save file succes to " + fileName;
@@ -148,11 +148,11 @@ public class WeixinPayTransport {
             int readTimeoutMs, boolean useCert, boolean autoReport) throws Exception {
         Exception exception = null;
         long elapsedTimeMillis = 0;
-        long startTimestampMs = WeixinPayUtil.getCurrentTimestampMs();
+        long startTimestampMs = WxPayUtil.getCurrentTimestampMs();
         boolean firstHasDnsErr = false;
         boolean firstHasConnectTimeout = false;
         boolean firstHasReadTimeout = false;
-        IWeixinPayDomain.DomainInfo domainInfo = config.getWXPayDomain().getDomain(config);
+        IWxPayDomain.DomainInfo domainInfo = config.getWXPayDomain().getDomain(config);
         if (domainInfo == null) {
             throw new Exception("WXPayConfig.getWXPayDomain().getDomain() is empty or null");
         }
@@ -160,9 +160,9 @@ public class WeixinPayTransport {
             long start = System.currentTimeMillis();
             String result = requestOnce(domainInfo.domain, urlSuffix, uuid, data, connectTimeoutMs,
                     readTimeoutMs, useCert);
-            elapsedTimeMillis = WeixinPayUtil.getCurrentTimestampMs() - startTimestampMs;
+            elapsedTimeMillis = WxPayUtil.getCurrentTimestampMs() - startTimestampMs;
             config.getWXPayDomain().report(domainInfo.domain, elapsedTimeMillis, null);
-            WeixinPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
+            WxPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
                     domainInfo.primaryDomain, connectTimeoutMs, readTimeoutMs, firstHasDnsErr,
                     firstHasConnectTimeout, firstHasReadTimeout);
             long end = System.currentTimeMillis();
@@ -172,32 +172,32 @@ public class WeixinPayTransport {
         } catch (UnknownHostException ex) { // dns 解析错误，或域名不存在
             exception = ex;
             firstHasDnsErr = true;
-            elapsedTimeMillis = WeixinPayUtil.getCurrentTimestampMs() - startTimestampMs;
-            WeixinPayUtil.getLogger().warn("UnknownHostException for domainInfo {}", domainInfo);
-            WeixinPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
+            elapsedTimeMillis = WxPayUtil.getCurrentTimestampMs() - startTimestampMs;
+            WxPayUtil.getLogger().warn("UnknownHostException for domainInfo {}", domainInfo);
+            WxPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
                     domainInfo.primaryDomain, connectTimeoutMs, readTimeoutMs, firstHasDnsErr,
                     firstHasConnectTimeout, firstHasReadTimeout);
         } catch (ConnectTimeoutException ex) {
             exception = ex;
             firstHasConnectTimeout = true;
-            elapsedTimeMillis = WeixinPayUtil.getCurrentTimestampMs() - startTimestampMs;
-            WeixinPayUtil.getLogger().warn("connect timeout happened for domainInfo {}",
+            elapsedTimeMillis = WxPayUtil.getCurrentTimestampMs() - startTimestampMs;
+            WxPayUtil.getLogger().warn("connect timeout happened for domainInfo {}",
                     domainInfo);
-            WeixinPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
+            WxPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
                     domainInfo.primaryDomain, connectTimeoutMs, readTimeoutMs, firstHasDnsErr,
                     firstHasConnectTimeout, firstHasReadTimeout);
         } catch (SocketTimeoutException ex) {
             exception = ex;
             firstHasReadTimeout = true;
-            elapsedTimeMillis = WeixinPayUtil.getCurrentTimestampMs() - startTimestampMs;
-            WeixinPayUtil.getLogger().warn("timeout happened for domainInfo {}", domainInfo);
-            WeixinPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
+            elapsedTimeMillis = WxPayUtil.getCurrentTimestampMs() - startTimestampMs;
+            WxPayUtil.getLogger().warn("timeout happened for domainInfo {}", domainInfo);
+            WxPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
                     domainInfo.primaryDomain, connectTimeoutMs, readTimeoutMs, firstHasDnsErr,
                     firstHasConnectTimeout, firstHasReadTimeout);
         } catch (Exception ex) {
             exception = ex;
-            elapsedTimeMillis = WeixinPayUtil.getCurrentTimestampMs() - startTimestampMs;
-            WeixinPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
+            elapsedTimeMillis = WxPayUtil.getCurrentTimestampMs() - startTimestampMs;
+            WxPayReport.getInstance(config).report(uuid, elapsedTimeMillis, domainInfo.domain,
                     domainInfo.primaryDomain, connectTimeoutMs, readTimeoutMs, firstHasDnsErr,
                     firstHasConnectTimeout, firstHasReadTimeout);
         }

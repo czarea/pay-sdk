@@ -1,7 +1,7 @@
 package com.kmob.paysdk.wxpay.response;
 
 import com.kmob.paysdk.util.MapUtil;
-import com.kmob.paysdk.wxpay.transport.WeixinPayUtil;
+import com.kmob.paysdk.wxpay.transport.WxPayUtil;
 
 /**
  * 返回微信实体
@@ -50,7 +50,7 @@ public class WxNotifyResponse {
             synchronized(WxNotifyResponse.class) {
                 if(ERROR_RESPONSE == null) {
                     try {
-                        ERROR_RESPONSE =WeixinPayUtil.mapToXml( MapUtil.beanToStringMap(new WxNotifyResponse("ERROR","ERROR")));
+                        ERROR_RESPONSE =WxPayUtil.mapToXml( MapUtil.beanToStringMap(new WxNotifyResponse("ERROR","ERROR")));
                     } catch (Exception e) {
                     }
                 }
