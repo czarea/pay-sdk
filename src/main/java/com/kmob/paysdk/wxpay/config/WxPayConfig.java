@@ -3,6 +3,7 @@ package com.kmob.paysdk.wxpay.config;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -102,14 +103,6 @@ public class WxPayConfig {
 
     private byte[] certData;
 
-    private WxPayConfig() throws Exception {
-        File file = new File(certPath);
-        InputStream certStream = new FileInputStream(file);
-        this.certData = new byte[(int) file.length()];
-        certStream.read(this.certData);
-        certStream.close();
-    }
-
     public String getAppID() {
         return appId;
     }
@@ -170,6 +163,15 @@ public class WxPayConfig {
     }
 
     public void setCertPath(String certPath) {
+        File file = new File(certPath);
+        InputStream certStream;
+        try {
+            certStream = new FileInputStream(file);
+            this.certData = new byte[(int) file.length()];
+            certStream.read(this.certData);
+            certStream.close();
+        } catch (IOException e) {
+        }
         this.certPath = certPath;
     }
 
