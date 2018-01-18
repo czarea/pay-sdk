@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kmob</groupId>
 	<artifactId>paysdk</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.5</version>
 	<name>${project.artifactId}</name>
 	<description>千陌支付SDK</description>
 	<properties>
