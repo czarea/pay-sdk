@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kmob.paysdk.dto.ResultInfo;
+import com.kmob.paysdk.wxpay.request.WxEntrustRequest;
+import com.kmob.paysdk.wxpay.request.WxPayMicropayRequest;
 import com.kmob.paysdk.wxpay.request.WxPayRefundQueryRequest;
 import com.kmob.paysdk.wxpay.request.WxPayRefundRequest;
 import com.kmob.paysdk.wxpay.request.WxPayUnifiedOrderRequest;
@@ -21,6 +23,29 @@ import com.kmob.paysdk.wxpay.response.WxPayUnifiedOrderResponse;
  * @author verne
  */
 public interface WxPaysdkService {
+
+    /**
+     * <pre>
+     * 提交刷卡支付
+     * 文档地址：https://pay.weixin.qq.com/wiki/doc/api/micropay.php?chapter=9_10&index=1
+     * 应用场景：
+     * 收银员使用扫码设备读取微信用户刷卡授权码以后，二维码或条码信息传送至商户收银台，由商户收银台或者商户后台调用该接口发起支付。
+     * 提醒1：提交支付请求后微信会同步返回支付结果。当返回结果为“支付失败”时，调用【查询订单API】，查询支付实际交易结果；当返回结果为“USERPAYING”时，商户系统可设置间隔时间(建议1秒)重新查询支付结果，查询10次直到支付成功
+     * 接口地址：   https://api.mch.weixin.qq.com/pay/micropay
+     * 是否需要证书：不需要。
+     * </pre>
+     */
+    WxPayOrderQueryResponse micropay(WxPayMicropayRequest request) throws Exception;
+
+    /**
+     * 签约返回url地址
+     * 
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    String entrustWeb(WxEntrustRequest request) throws Exception;
+
     /**
      * 统一下单
      * 

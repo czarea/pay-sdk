@@ -5,10 +5,12 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.kmob.paysdk.PaysdkApplication;
+import com.kmob.paysdk.wxpay.request.WxPayMicropayRequest;
 import com.kmob.paysdk.wxpay.request.WxPayRefundQueryRequest;
 import com.kmob.paysdk.wxpay.request.WxPayRefundRequest;
 import com.kmob.paysdk.wxpay.request.WxPayUnifiedOrderRequest;
@@ -20,14 +22,13 @@ import com.kmob.paysdk.wxpay.response.WxPayUnifiedOrderResponse;
 import com.kmob.paysdk.wxpay.service.WxPaysdkService;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
+@SpringBootTest(classes = PaysdkApplication.class,webEnvironment=WebEnvironment.RANDOM_PORT)
 public class ServiceTest {
     @Autowired
     private WxPaysdkService weixinPaysdkService;
 
     @Test
-    public void testUnifiedOrder(String nonceStr) throws Exception {
+    public void testUnifiedOrder() throws Exception {
         WxPayUnifiedOrderRequest request = new WxPayUnifiedOrderRequest();
         request.setBody("test");
         request.setTotalFee(1);
@@ -48,6 +49,16 @@ public class ServiceTest {
         Map<String, String> res =
                 (Map<String, String>) weixinPaysdkService.appPay(request).getData();
         System.out.println(res);
+    }
+    
+    @Test
+    public void testMicropay() throws Exception {
+        WxPayMicropayRequest request =  new WxPayMicropayRequest();
+        request.setBody("测试");
+        request.setAuthCode("134819255087088144");
+        request.setOutTradeNo("test2018020711116");
+        request.setTotalFee(1);
+        weixinPaysdkService.micropay(request );
     }
 
 

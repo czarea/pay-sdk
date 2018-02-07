@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import com.kmob.paysdk.wxpay.transport.IWxPayDomain;
 import com.kmob.paysdk.wxpay.transport.WxPayDomainSimpleImpl;
@@ -17,7 +16,7 @@ import com.kmob.paysdk.wxpay.transport.WxPayDomainSimpleImpl;
  *
  * @author verne
  */
-@Component
+//@Component
 @ConfigurationProperties(prefix = "wxpay")
 public class WxPayConfig {
     /**
@@ -77,13 +76,23 @@ public class WxPayConfig {
      */
     private String alternateDomain = "api2.mch.weixin.qq.com";
     /**
-     * 
+     * 报表线程数大小
      */
     private int reportWorkerNum = 1;
     /**
-     * 
+     * 报表批量大小
      */
     private int reportBatchSize = 2;
+    
+    /**
+     * 刷卡支付查询间隔
+     */
+    private int micropayInterval=10;
+    
+    /**
+     * 刷卡支付查询总次数
+     */
+    private int micropayTimes=3;
 
     public boolean isUseSandbox() {
         return useSandbox;
@@ -249,6 +258,22 @@ public class WxPayConfig {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public int getMicropayInterval() {
+        return micropayInterval;
+    }
+
+    public void setMicropayInterval(int micropayInterval) {
+        this.micropayInterval = micropayInterval;
+    }
+
+    public int getMicropayTimes() {
+        return micropayTimes;
+    }
+
+    public void setMicropayTimes(int micropayTimes) {
+        this.micropayTimes = micropayTimes;
     }
 
 }

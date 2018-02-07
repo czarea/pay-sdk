@@ -68,7 +68,6 @@ public class WxPayMicropayRequest extends WxPayBaseRequest {
     /**
      * <pre> 终端IP spbill_create_ip 是 String(16) 8.8.8.8 调用微信支付API的机器IP
      **/
-    @Required
     @XStreamAlias("spbill_create_ip")
     private String spbillCreateIp;
 

@@ -39,7 +39,7 @@ public class PaysdkAutoConfiguration {
     @Bean
     @ConditionalOnProperty(prefix = "wxpay", name = "use",havingValue="true")
     public WxPaysdkService weixinPayService(WxPayConfig weixinPayConfig) throws Exception {
-        logger.debug("init WeixinPayService successs!");
+        logger.debug("init WeixinPaySDKService successs!");
         return new WxPaysdkServiceImpl(weixinPayConfig);
     }
     

@@ -3,18 +3,22 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kmob</groupId>
 	<artifactId>paysdk</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.6</version>
 	<name>${project.artifactId}</name>
 	<description>千陌支付SDK</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <alipay.sdk.version>20171027</alipay.sdk.version>
+        <http.client.version>4.5.3</http.client.version>
+        <guava.version>21.0</guava.version>
 		<spring-boot.version>1.5.4.RELEASE</spring-boot.version>
 		<servlet-api.version>4.0.0</servlet-api.version>
 		<lombok.version>1.16.18</lombok.version>
 		<xstream.version>1.4.10</xstream.version>
 		<commons.lang3.version>3.5</commons.lang3.version>
+		<beanutils.version>1.9.3</beanutils.version>
 
 		<java.version>1.8</java.version>
 		<fastjson.version>1.2.31</fastjson.version>
@@ -69,14 +73,19 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>${beanutils.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>alipay-sdk</artifactId>
-			<version>20171027</version>
+			<version>${alipay.sdk.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.3</version>
+			<version>${http.client.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -101,7 +110,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>21.0</version>
+			<version>${guava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>

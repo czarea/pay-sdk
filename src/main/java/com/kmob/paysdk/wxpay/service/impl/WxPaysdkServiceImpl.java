@@ -3,6 +3,7 @@ package com.kmob.paysdk.wxpay.service.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,11 +33,15 @@ import org.springframework.util.StringUtils;
 import com.kmob.paysdk.dto.ResultInfo;
 import com.kmob.paysdk.exception.WxPayException;
 import com.kmob.paysdk.util.BeanUtils;
+import com.kmob.paysdk.util.MapUtil;
+import com.kmob.paysdk.util.Underline2Camel;
 import com.kmob.paysdk.wxpay.ParameterKeyConstants;
 import com.kmob.paysdk.wxpay.config.WxPayConfig;
 import com.kmob.paysdk.wxpay.constant.WxPayConstants;
 import com.kmob.paysdk.wxpay.constant.WxPayConstants.SignType;
+import com.kmob.paysdk.wxpay.request.WxEntrustRequest;
 import com.kmob.paysdk.wxpay.request.WxPayBaseRequest;
+import com.kmob.paysdk.wxpay.request.WxPayMicropayRequest;
 import com.kmob.paysdk.wxpay.request.WxPayOrderCloseRequest;
 import com.kmob.paysdk.wxpay.request.WxPayOrderQueryRequest;
 import com.kmob.paysdk.wxpay.request.WxPayOrderReverseRequest;
@@ -44,6 +49,7 @@ import com.kmob.paysdk.wxpay.request.WxPayRefundQueryRequest;
 import com.kmob.paysdk.wxpay.request.WxPayRefundRequest;
 import com.kmob.paysdk.wxpay.request.WxPayUnifiedOrderRequest;
 import com.kmob.paysdk.wxpay.response.WxNotifyResponse;
+import com.kmob.paysdk.wxpay.response.WxPayMicropayResponse;
 import com.kmob.paysdk.wxpay.response.WxPayOrderCloseResponse;
 import com.kmob.paysdk.wxpay.response.WxPayOrderQueryResponse;
 import com.kmob.paysdk.wxpay.response.WxPayRefundQueryResponse;
@@ -257,7 +263,6 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
     @Override
     public WxNotifyResponse notify(HttpServletRequest request, HttpServletResponse response,
             WxNotifyHandlerService notifyService) throws Exception {
-        // TODO Auto-generated method stub
         PrintWriter writer = response.getWriter();
         InputStream inStream = request.getInputStream();
         ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
@@ -293,7 +298,6 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
             request.setSignType(WxPayConstants.HMACSHA256);
         }
         Map<String, String> reqData = BeanUtils.xmlBean2Map(request);
-        System.out.println(reqData);
         String sign = WxPayUtil.generateSignature(reqData, weixinPayConfig.getKey(), signType);
         request.checkFields();
         request.setSign(sign);
@@ -336,6 +340,77 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
             logger.error("\n【请求地址】：{}\n【请求数据】：\n{}\n【响应数据】：\n{}", url, requestStr, e);
             throw new WxPayException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public WxPayOrderQueryResponse micropay(WxPayMicropayRequest request) throws Exception {
+        fillRequestData(request);
+        String url = "/pay/micropay";
+        String responseContent = this.post(url, request.toXML(), false);
+        WxPayMicropayResponse result =
+                WxPayMicropayResponse.fromXML(responseContent, WxPayMicropayResponse.class);
+
+        WxPayOrderQueryResponse response = new WxPayOrderQueryResponse();
+
+        org.apache.commons.beanutils.BeanUtils.copyProperties(response, result);
+
+        if ("SUCCESS".equals(result.getReturnCode())) {
+            String resultCode = result.getResultCode();
+            String errCode = result.getErrCode();
+            if (resultCode.equals("SUCCESS")) {
+                return response;
+            } else {
+                if (errCode.equals("USERPAYING")) {
+                    for (int i = 0; i < weixinPayConfig.getMicropayTimes(); i++) {
+                        response = this.queryOrder("", request.getOutTradeNo());
+                        logger.info(
+                                "WXmicropay return error ,retry {} times query order ,the result is {}",
+                                (i + 1), response);
+                        String tradeState = response.getTradeState();
+                        if (tradeState != null && tradeState.equals("SUCCESS")) {
+                            return response;
+                        }
+                        Thread.sleep(weixinPayConfig.getMicropayInterval());
+                    }
+                }
+            }
+        }
+
+        return response;
+    }
+
+    @Override
+    public String entrustWeb(WxEntrustRequest request) throws Exception {
+        request.setAppid(weixinPayConfig.getAppID());
+        request.setMchId(weixinPayConfig.getMchID());
+        request.setSignType(WxPayConstants.MD5);
+        Map<String, String> reqData = BeanUtils.xmlBean2Map(request);
+        String sign = WxPayUtil.generateSignature(reqData, weixinPayConfig.getKey(), signType);
+        request.checkFields();
+        request.setSign(sign);
+        
+        StringBuffer urlBuffer = new StringBuffer();
+        urlBuffer.append(WxPayConstants.WX_PAY_BASE_URL + WxPayConstants.ENTRUSTWEB_URL_SUFFIX);
+        Map<String, String> datas = MapUtil.beanToStringMap(request);
+        Set<Entry<String, String>> entries = datas.entrySet();
+        boolean first = true;
+        for (Entry<String, String> entry : entries) {
+            String name = Underline2Camel.camelToUnderline(entry.getKey());
+            String value = entry.getValue();
+            if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {
+                if (first) {
+                    first = false;
+                } else {
+                    urlBuffer.append("&");
+                }
+                if (value.startsWith("http") || value.startsWith("https")) {
+                    urlBuffer.append(name).append("=").append(URLEncoder.encode(value, "UTF-8"));
+                } else {
+                    urlBuffer.append(name).append("=").append(value);
+                }
+            }
+        }
+        return urlBuffer.toString();
     }
 
 }
