@@ -37,7 +37,8 @@ public class WxPayConstants {
     public static final String DOWNLOADBILL_URL_SUFFIX = "/pay/downloadbill";
     public static final String REPORT_URL_SUFFIX       = "/payitil/report";
     public static final String SHORTURL_URL_SUFFIX     = "/tools/shorturl";
-    public static final String ENTRUSTWEB_URL_SUFFIX     = "papay/entrustweb";
+    public static final String ENTRUSTWEB_URL_SUFFIX     = "/papay/entrustweb";
+    public static final String PAPPAYAPPLY_URL_SUFFIX     = "/pay/pappayapply";
     
     public static final String AUTHCODETOOPENID_URL_SUFFIX = "/tools/authcodetoopenid";
 

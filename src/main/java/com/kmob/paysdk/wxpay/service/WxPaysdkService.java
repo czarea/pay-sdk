@@ -5,11 +5,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.kmob.paysdk.dto.ResultInfo;
 import com.kmob.paysdk.wxpay.request.WxEntrustRequest;
+import com.kmob.paysdk.wxpay.request.WxPappayRequest;
 import com.kmob.paysdk.wxpay.request.WxPayMicropayRequest;
 import com.kmob.paysdk.wxpay.request.WxPayRefundQueryRequest;
 import com.kmob.paysdk.wxpay.request.WxPayRefundRequest;
 import com.kmob.paysdk.wxpay.request.WxPayUnifiedOrderRequest;
 import com.kmob.paysdk.wxpay.response.WxNotifyResponse;
+import com.kmob.paysdk.wxpay.response.WxPappayResponse;
 import com.kmob.paysdk.wxpay.response.WxPayOrderCloseResponse;
 import com.kmob.paysdk.wxpay.response.WxPayOrderQueryResponse;
 import com.kmob.paysdk.wxpay.response.WxPayRefundQueryResponse;
@@ -45,6 +47,16 @@ public interface WxPaysdkService {
      * @throws Exception
      */
     String entrustWeb(WxEntrustRequest request) throws Exception;
+
+
+    /**
+     * 委托代扣
+     * 
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    WxPappayResponse pappay(WxPappayRequest request) throws Exception;
 
     /**
      * 统一下单

@@ -40,6 +40,7 @@ import com.kmob.paysdk.wxpay.config.WxPayConfig;
 import com.kmob.paysdk.wxpay.constant.WxPayConstants;
 import com.kmob.paysdk.wxpay.constant.WxPayConstants.SignType;
 import com.kmob.paysdk.wxpay.request.WxEntrustRequest;
+import com.kmob.paysdk.wxpay.request.WxPappayRequest;
 import com.kmob.paysdk.wxpay.request.WxPayBaseRequest;
 import com.kmob.paysdk.wxpay.request.WxPayMicropayRequest;
 import com.kmob.paysdk.wxpay.request.WxPayOrderCloseRequest;
@@ -49,6 +50,7 @@ import com.kmob.paysdk.wxpay.request.WxPayRefundQueryRequest;
 import com.kmob.paysdk.wxpay.request.WxPayRefundRequest;
 import com.kmob.paysdk.wxpay.request.WxPayUnifiedOrderRequest;
 import com.kmob.paysdk.wxpay.response.WxNotifyResponse;
+import com.kmob.paysdk.wxpay.response.WxPappayResponse;
 import com.kmob.paysdk.wxpay.response.WxPayMicropayResponse;
 import com.kmob.paysdk.wxpay.response.WxPayOrderCloseResponse;
 import com.kmob.paysdk.wxpay.response.WxPayOrderQueryResponse;
@@ -411,6 +413,15 @@ public class WxPaysdkServiceImpl implements WxPaysdkService {
             }
         }
         return urlBuffer.toString();
+    }
+
+    @Override
+    public WxPappayResponse pappay(WxPappayRequest request) throws Exception {
+        String url = WxPayConstants.PAPPAYAPPLY_URL_SUFFIX;
+        fillRequestData(request);
+        String requestStr = request.toXML();
+        String response = this.post(url, requestStr, false);
+        return WxPappayResponse.fromXML(response, WxPappayResponse.class);
     }
 
 }

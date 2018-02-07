@@ -3,6 +3,11 @@ package com.kmob.paysdk.wxpay.request;
 import com.kmob.paysdk.annotation.Required;
 import com.kmob.paysdk.exception.WxPayException;
 
+/**
+ * 委托签约
+ *
+ * @author verne
+ */
 public class WxEntrustRequest extends WxPayBaseRequest{
     @Required
     private String planId;
