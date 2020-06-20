@@ -1,24 +1,14 @@
-# 千陌内部支付SDK
+# 支付SDK
 
-完成与Springboot的集成，使用公司框架（SpringCloud微服务架构）开箱即用，分三步
-
+完成与SpringBoot的集成，开箱即用，分三步
 
 ---
 ## 一、“三步曲”
-### 1.1 加入sdk包
+### 1.1 下载代码，install到本地私有仓库，加入sdk包
 
 ```
-<!-- 千陌maven私库 -->
-<repositories>
-	<repository>
-		<id>1000mob-nexus-wan</id>
-		<name>1000mob nexus repository</name>
-		<url>http://59.110.6.79:9081/repository/maven-public/</url>
-	</repository>
-</repositories>
-
 <dependency>
-	<groupId>com.kmob</groupId>
+	<groupId>com.czarea</groupId>
 	<artifactId>paysdk</artifactId>
 	<version>0.0.1</version>
 	<exclusions>
@@ -72,7 +62,7 @@ Map<String, String> unifiedOrderResult = weixinPayService.unifiedOrder(weixinPay
 /**
  * 实现支付宝支付结果通知
  *
- * @author verne
+ * @author zhouzx
  */
 @Component
 public class AliPayNotifyHandlerServiceImpl implements AliPayNotifyHandlerService {
@@ -91,7 +81,7 @@ public class AliPayNotifyHandlerServiceImpl implements AliPayNotifyHandlerServic
 /**
  * 实现微信支付通知业务处理
  *
- * @author verne
+ * @author zhouzx
  */
 @Service
 public class WeixinNotifyHandlerServiceImpl implements WeixinNotifyHandlerService {
