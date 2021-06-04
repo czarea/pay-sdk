@@ -11,7 +11,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<alipay.sdk.version>20171027</alipay.sdk.version>
-		<http.client.version>4.5.3</http.client.version>
+		<http.client.version>4.5.13</http.client.version>
 		<guava.version>21.0</guava.version>
 		<spring-boot.version>1.5.4.RELEASE</spring-boot.version>
 		<servlet-api.version>4.0.0</servlet-api.version>
