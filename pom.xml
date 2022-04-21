@@ -18,7 +18,7 @@
 		<lombok.version>1.16.18</lombok.version>
 		<xstream.version>1.4.10</xstream.version>
 		<commons.lang3.version>3.5</commons.lang3.version>
-		<beanutils.version>1.9.3</beanutils.version>
+		<beanutils.version>1.9.4</beanutils.version>
 
 		<java.version>1.8</java.version>
 		<fastjson.version>1.2.31</fastjson.version>
