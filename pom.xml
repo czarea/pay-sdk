@@ -13,7 +13,7 @@
 		<alipay.sdk.version>20171027</alipay.sdk.version>
 		<http.client.version>4.5.3</http.client.version>
 		<guava.version>21.0</guava.version>
-		<spring-boot.version>1.5.4.RELEASE</spring-boot.version>
+		<spring-boot.version>2.5.12</spring-boot.version>
 		<servlet-api.version>4.0.0</servlet-api.version>
 		<lombok.version>1.16.18</lombok.version>
 		<xstream.version>1.4.10</xstream.version>
